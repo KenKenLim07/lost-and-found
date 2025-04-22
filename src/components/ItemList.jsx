@@ -85,7 +85,7 @@ export default function ItemList() {
               <p className="text-sm text-gray-500 mb-1">
                 {item.status.toUpperCase()}
               </p>
-              <p className="text-sm mb-2">{item.description}</p>
+              <p className="text-sm mb-2 break-words text wrap">{item.description}</p>
               <p className="text-xs text-gray-600">Contact: {item.contact_info}</p>
               <p className="text-xs text-gray-400 mt-1">
                 Posted on {new Date(item.created_at).toLocaleString()}
