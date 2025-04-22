@@ -1,0 +1,123 @@
+import { useState } from "react";
+import { supabase } from "../lib/supabase";
+import { motion } from "framer-motion";
+
+export default function PostItemForm() {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [status, setStatus] = useState("lost");
+  const [contactInfo, setContactInfo] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setLoading(true);
+
+    let imageUrl = "";
+    if (imageFile) {
+      const fileExt = imageFile.name.split(".").pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const { data, error } = await supabase.storage
+        .from("item-images")
+        .upload(fileName, imageFile);
+
+      if (error) {
+        alert("Image upload failed");
+        console.error(error.message);
+        setLoading(false);
+        return;
+      }
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("item-images").getPublicUrl(fileName);
+      imageUrl = publicUrl;
+      
+    }
+
+    const { error: insertError } = await supabase.from("items").insert([
+      {
+        title,
+        description,
+        status,
+        contact_info: contactInfo,
+        image_url: imageUrl,
+      },
+    ]);
+
+    if (insertError) {
+      alert("Failed to post item");
+      console.error(insertError.message);
+    } else {
+      alert("Item posted!");
+      setTitle("");
+      setDescription("");
+      setStatus("lost");
+      setContactInfo("");
+      setImageFile(null);
+    }
+
+    setLoading(false);
+  }
+
+  return (
+    <motion.form
+      onSubmit={handleSubmit}
+      className="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow-md space-y-4"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      <h2 className="text-xl font-semibold">Post a Lost or Found Item</h2>
+
+      <input
+        type="text"
+        placeholder="Item Title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        className="w-full p-2 border rounded-md"
+        required
+      />
+
+      <textarea
+        placeholder="Description"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        className="w-full p-2 border rounded-md"
+        rows={4}
+      />
+
+      <select
+        value={status}
+        onChange={(e) => setStatus(e.target.value)}
+        className="w-full p-2 border rounded-md"
+      >
+        <option value="lost">Lost</option>
+        <option value="found">Found</option>
+      </select>
+
+      <input
+        type="text"
+        placeholder="Contact Info (email or phone)"
+        value={contactInfo}
+        onChange={(e) => setContactInfo(e.target.value)}
+        className="w-full p-2 border rounded-md"
+      />
+
+      <input
+        type="file"
+        onChange={(e) => setImageFile(e.target.files[0])}
+        accept="image/*"
+        className="w-full"
+      />
+
+      <button
+        type="submit"
+        className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
+        disabled={loading}
+      >
+        {loading ? "Posting..." : "Post Item"}
+      </button>
+    </motion.form>
+  );
+}
