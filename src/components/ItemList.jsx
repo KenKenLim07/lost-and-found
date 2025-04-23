@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { motion } from "framer-motion";
-import FullScreenImageModal from "./FullScreenImageModal"; // adjust path if needed
+import ItemCard from "./ItemCard";
+import FullScreenImageModal from "./FullScreenImageModal";
 
 export default function ItemList() {
   const [items, setItems] = useState([]);
@@ -9,32 +10,25 @@ export default function ItemList() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [userId, setUserId] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(null); // for modal
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
 
-      // Get current user
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (user) {
-        setUserId(user.id);
-      }
+      if (user) setUserId(user.id);
 
-      // Fetch items
       const { data, error } = await supabase
         .from("items")
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Error fetching items:", error.message);
-      } else {
-        setItems(data);
-      }
+      if (error) console.error("Error fetching items:", error.message);
+      else setItems(data);
 
       setLoading(false);
     }
@@ -44,7 +38,6 @@ export default function ItemList() {
 
   const handleDelete = async (itemId) => {
     const { error } = await supabase.from("items").delete().eq("id", itemId);
-
     if (error) {
       alert("Failed to delete item.");
       console.error(error.message);
@@ -57,6 +50,7 @@ export default function ItemList() {
     const matchesSearch =
       item.title.toLowerCase().includes(search.toLowerCase()) ||
       item.description.toLowerCase().includes(search.toLowerCase());
+
     const matchesStatus =
       statusFilter === "all" || item.status === statusFilter;
 
@@ -64,12 +58,14 @@ export default function ItemList() {
   });
 
   if (loading) return <p className="text-center mt-8">Loading items...</p>;
-  if (items.length === 0) return <p className="text-center mt-8">No items posted yet.</p>;
+  if (items.length === 0)
+    return <p className="text-center mt-8">No items posted yet.</p>;
 
   return (
     <div className="max-w-6xl mx-auto px-4 mt-8 space-y-6">
       {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-xl shadow">
+        {/* Search Input */}
         <input
           type="text"
           placeholder="Search by title or description..."
@@ -77,15 +73,31 @@ export default function ItemList() {
           onChange={(e) => setSearch(e.target.value)}
           className="w-full sm:w-1/2 p-2 border border-gray-300 rounded-md"
         />
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="p-2 border border-gray-300 rounded-md"
-        >
-          <option value="all">All</option>
-          <option value="lost">Lost</option>
-          <option value="found">Found</option>
-        </select>
+
+        {/* Custom Dropdown Filter */}
+<div className="relative w-40">
+  <select
+    value={statusFilter}
+    onChange={(e) => setStatusFilter(e.target.value)}
+    className="w-full appearance-none p-2 pr-10 border border-gray-300 rounded-md"
+  >
+    <option value="all">All</option>
+    <option value="lost">Lost</option>
+    <option value="found">Found</option>
+  </select>
+  <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-600">
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+    </svg>
+  </div>
+</div>
+
       </div>
 
       {/* Grid of Items */}
@@ -94,41 +106,13 @@ export default function ItemList() {
           <p className="text-center col-span-full">No items match your filters.</p>
         ) : (
           filteredItems.map((item) => (
-            <motion.div
+            <ItemCard
               key={item.id}
-              className="bg-white p-4 rounded-xl shadow-md relative"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-             {item.image_url && (
-  <>
-    <img
-      src={item.image_url}
-      alt={item.title}
-      className="w-full h-48 object-cover rounded-lg mb-3 cursor-pointer"
-      onClick={() => setSelectedImage(item.image_url)}
-    />
-    <p className="text-xs text-gray-400 text-center -mt-2 mb-2">Click/Tap image to view full screen</p>
-  </>
-)}
-
-              <h3 className="text-lg font-semibold break-words border-2 border-yellow-700 rounded-2xl text-center mb-4">{item.title}</h3>
-              <p className="text-sm text-gray-500 mb-1">Status: {item.status.toUpperCase()}</p>
-              <p className="text-sm mb-2 break-words text-gray-600">Description: {item.description}</p>
-              <p className="text-xs text-gray-600">Contact: {item.contact_info}</p>
-              <p className="text-xs text-gray-400 mt-1">
-                Posted on {new Date(item.created_at).toLocaleString()}
-              </p>
-
-              {userId === item.user_id && (
-                <button
-                  onClick={() => handleDelete(item.id)}
-                  className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-xs border px-2 py-1 border-red-300 rounded-md bg-white"
-                >
-                  Delete
-                </button>
-              )}
-            </motion.div>
+              item={item}
+              isOwner={item.user_id === userId}
+              onDelete={handleDelete}
+              onImageClick={setSelectedImage}
+            />
           ))
         )}
       </div>
