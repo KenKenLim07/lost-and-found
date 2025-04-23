@@ -100,14 +100,18 @@ export default function ItemList() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              {item.image_url && (
-                <img
-                  src={item.image_url}
-                  alt={item.title}
-                  className="w-full h-48 object-cover rounded-lg mb-3 cursor-pointer"
-                  onClick={() => setSelectedImage(item.image_url)}
-                />
-              )}
+             {item.image_url && (
+  <>
+    <img
+      src={item.image_url}
+      alt={item.title}
+      className="w-full h-48 object-cover rounded-lg mb-3 cursor-pointer"
+      onClick={() => setSelectedImage(item.image_url)}
+    />
+    <p className="text-xs text-gray-400 text-center -mt-2 mb-2">Click/Tap image to view full screen</p>
+  </>
+)}
+
               <h3 className="text-lg font-semibold break-words border-2 border-yellow-700 rounded-2xl text-center mb-4">{item.title}</h3>
               <p className="text-sm text-gray-500 mb-1">Status: {item.status.toUpperCase()}</p>
               <p className="text-sm mb-2 break-words text-gray-600">Description: {item.description}</p>

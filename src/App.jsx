@@ -2,6 +2,7 @@ import './index.css';
 import PostItemForm from "./components/PostItemForm";
 import ItemList from "./components/ItemList";
 import AuthForm from "./components/AuthForm";
+import NavBar from "./components/NavBar";
 import { useUser } from "./hooks/useUser";
 import { supabase } from "./lib/supabase";
 
@@ -21,19 +22,13 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen p-6 bg-white">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-semibold">Lost & Found</h1>
-        <button
-          onClick={handleSignOut}
-          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
-        >
-          Sign Out
-        </button>
-      </div>
+    <div className="min-h-screen bg-white">
+      <NavBar onSignOut={handleSignOut} />
 
-      <PostItemForm user={user} />
-      <ItemList />
+      <div className="p-6">
+        <PostItemForm user={user} />
+        <ItemList />
+      </div>
     </div>
   );
 }
