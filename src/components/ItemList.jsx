@@ -1,15 +1,30 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { motion } from "framer-motion";
+import FullScreenImageModal from "./FullScreenImageModal"; // adjust path if needed
 
 export default function ItemList() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [userId, setUserId] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null); // for modal
 
   useEffect(() => {
-    async function fetchItems() {
+    async function fetchData() {
+      setLoading(true);
+
+      // Get current user
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        setUserId(user.id);
+      }
+
+      // Fetch items
       const { data, error } = await supabase
         .from("items")
         .select("*")
@@ -24,8 +39,19 @@ export default function ItemList() {
       setLoading(false);
     }
 
-    fetchItems();
+    fetchData();
   }, []);
+
+  const handleDelete = async (itemId) => {
+    const { error } = await supabase.from("items").delete().eq("id", itemId);
+
+    if (error) {
+      alert("Failed to delete item.");
+      console.error(error.message);
+    } else {
+      setItems((prev) => prev.filter((item) => item.id !== itemId));
+    }
+  };
 
   const filteredItems = items.filter((item) => {
     const matchesSearch =
@@ -70,7 +96,7 @@ export default function ItemList() {
           filteredItems.map((item) => (
             <motion.div
               key={item.id}
-              className="bg-white p-4 rounded-xl shadow-md"
+              className="bg-white p-4 rounded-xl shadow-md relative"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
             >
@@ -78,22 +104,36 @@ export default function ItemList() {
                 <img
                   src={item.image_url}
                   alt={item.title}
-                  className="w-full h-48 object-cover rounded-lg mb-3"
+                  className="w-full h-48 object-cover rounded-lg mb-3 cursor-pointer"
+                  onClick={() => setSelectedImage(item.image_url)}
                 />
               )}
-              <h3 className="text-lg font-semibold">{item.title}</h3>
-              <p className="text-sm text-gray-500 mb-1">
-                {item.status.toUpperCase()}
-              </p>
-              <p className="text-sm mb-2 break-words text wrap">{item.description}</p>
+              <h3 className="text-lg font-semibold break-words border-2 border-yellow-700 rounded-2xl text-center mb-4">{item.title}</h3>
+              <p className="text-sm text-gray-500 mb-1">Status: {item.status.toUpperCase()}</p>
+              <p className="text-sm mb-2 break-words text-gray-600">Description: {item.description}</p>
               <p className="text-xs text-gray-600">Contact: {item.contact_info}</p>
               <p className="text-xs text-gray-400 mt-1">
                 Posted on {new Date(item.created_at).toLocaleString()}
               </p>
+
+              {userId === item.user_id && (
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-xs border px-2 py-1 border-red-300 rounded-md bg-white"
+                >
+                  Delete
+                </button>
+              )}
             </motion.div>
           ))
         )}
       </div>
+
+      {/* Fullscreen Image Modal */}
+      <FullScreenImageModal
+        imageUrl={selectedImage}
+        onClose={() => setSelectedImage(null)}
+      />
     </div>
   );
 }
