@@ -3,39 +3,32 @@ import { motion } from "framer-motion";
 export default function ItemCard({ item, onDelete, onImageClick, isOwner }) {
   return (
     <motion.div
-      className="bg-white p-4 rounded-xl shadow-md relative hover:shadow-lg transition-shadow"
+      className="bg-white p-4 rounded-2xl shadow-md hover:shadow-lg transition-shadow flex flex-col h-full"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
     >
       {/* Image */}
       {item.image_url && (
-        <>
+        <div className="relative">
           <img
             src={item.image_url}
             alt={item.title}
-            className="w-full h-48 object-cover rounded-lg mb-3 cursor-pointer"
+            className="w-full h-40 sm:h-48 object-cover rounded-xl cursor-pointer"
             onClick={() => onImageClick(item.image_url)}
           />
-          <p className="text-xs text-gray-400 text-center -mt-2 mb-3">
-            Tap image to zoom
-          </p>
-        </>
+          <p className="text-xs text-gray-400 text-center mt-1">Tap image to zoom</p>
+        </div>
       )}
 
-{/* Title in separate bordered box */}
-<div className="border-1 border-black-300 bg-gray-50 rounded-2xl px-3 py-2 mb-3">
-  <h3 className="text-lg font-bold text-black text-center truncate">
-    {item.title}
-  </h3>
-</div>
+      {/* Title */}
+      <h3 className="mt-3 text-lg font-bold text-center text-black truncate">{item.title}</h3>
 
-
-      {/* Grouped Details Section */}
-      <div className="border border-gray-200 rounded-md p-4 bg-gray-50 space-y-3">
-        {/* Status & Date */}
-        <div className="flex justify-between items-center">
+      {/* Grouped Info */}
+      <div className="mt-3 flex-1 border border-gray-200 rounded-lg p-3 bg-gray-50 space-y-3">
+        {/* Status and Date */}
+        <div className="flex justify-between items-center text-xs">
           <span
-            className={`text-xs px-2 py-1 rounded-full font-medium ${
+            className={`px-2 py-1 rounded-full font-medium ${
               item.status === "lost"
                 ? "bg-yellow-100 text-yellow-700"
                 : item.status === "found"
@@ -45,29 +38,27 @@ export default function ItemCard({ item, onDelete, onImageClick, isOwner }) {
           >
             {item.status.toUpperCase()}
           </span>
-          <p className="text-xs text-gray-400">
-            {new Date(item.created_at).toLocaleDateString()}
-          </p>
+          <p className="text-gray-400">{new Date(item.created_at).toLocaleDateString()}</p>
         </div>
 
         {/* Description */}
         <div>
-          <p className="text-sm text-gray-700 font-semibold mb-1">Description</p>
-          <p className="text-sm text-gray-600 break-words">{item.description}</p>
+          <p className="text-sm font-semibold text-gray-700 mb-1">Description</p>
+          <p className="text-sm text-gray-600 line-clamp-3">{item.description}</p>
         </div>
 
-        {/* Contact Info */}
+        {/* Contact */}
         <div>
-          <p className="text-sm text-gray-700 font-semibold mb-1">Contact</p>
+          <p className="text-sm font-semibold text-gray-700 mb-1">Contact</p>
           <p className="text-xs text-gray-500 break-words">{item.contact_info}</p>
         </div>
       </div>
 
-      {/* Delete Button */}
+      {/* Delete */}
       {isOwner && (
         <button
           onClick={() => onDelete(item.id)}
-          className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-xs border px-2 py-1 border-red-300 rounded-md bg-white"
+          className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-xs border border-red-300 bg-white px-2 py-1 rounded-md"
         >
           Delete
         </button>
