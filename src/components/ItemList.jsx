@@ -101,7 +101,7 @@ export default function ItemList() {
       </div>
 
       {/* Grid of Items */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-sm sm:text-base">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-sm sm:text-base">
         {filteredItems.length === 0 ? (
           <p className="text-center col-span-full">No items match your filters.</p>
         ) : (
