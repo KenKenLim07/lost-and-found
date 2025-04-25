@@ -27,7 +27,7 @@ function App() {
 
       <div className="p-6">
         <PostItemForm user={user} />
-        <ItemList />
+        <ItemList  setItem/>
       </div>
     </div>
   );
