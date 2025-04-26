@@ -80,30 +80,83 @@ const ItemList = forwardRef((props, ref) => {
     }
   };
 
-  const handleToggleReturned = async (itemId, isReturned) => {
+  const handleToggleReturned = async (itemId, isReturned, returnedToName = "") => {
     const currentDate = isReturned ? null : new Date().toISOString();
 
-    const { error } = await supabase
-      .from("items")
-      .update({
-        is_returned: !isReturned,
-        date_returned: currentDate,
-      })
-      .eq("id", itemId);
+    try {
+      // First, check if the returned_to column exists
+      const { data: tableInfo, error: tableError } = await supabase
+        .from('items')
+        .select('returned_to')
+        .limit(1);
 
-    if (error) {
-      console.error("Error updating return status:", error.message);
-      alert("Could not update return status.");
-      return;
+      if (tableError && tableError.code === '42703') {
+        // Column doesn't exist, we need to add it
+        console.log("The 'returned_to' column doesn't exist in the database. Please add it to your schema.");
+        
+        // Update without the returned_to field for now
+        const { error } = await supabase
+          .from("items")
+          .update({
+            is_returned: !isReturned,
+            date_returned: currentDate,
+          })
+          .eq("id", itemId);
+
+        if (error) {
+          console.error("Error updating return status:", error);
+          alert(`Could not update return status: ${error.message}`);
+          return;
+        }
+
+        // Update local state without returned_to
+        setItems((prevItems) =>
+          prevItems.map((item) =>
+            item.id === itemId
+              ? { 
+                  ...item, 
+                  is_returned: !isReturned, 
+                  date_returned: currentDate
+                }
+              : item
+          )
+        );
+        
+        return;
+      }
+
+      // If we get here, the column exists, so update with returned_to
+      const { error } = await supabase
+        .from("items")
+        .update({
+          is_returned: !isReturned,
+          date_returned: currentDate,
+          returned_to: !isReturned ? returnedToName : null,
+        })
+        .eq("id", itemId);
+
+      if (error) {
+        console.error("Error updating return status:", error);
+        alert(`Could not update return status: ${error.message}`);
+        return;
+      }
+
+      setItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === itemId
+            ? { 
+                ...item, 
+                is_returned: !isReturned, 
+                date_returned: currentDate,
+                returned_to: !isReturned ? returnedToName : null
+              }
+            : item
+        )
+      );
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      alert(`An unexpected error occurred: ${error.message}`);
     }
-
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === itemId
-          ? { ...item, is_returned: !isReturned, date_returned: currentDate }
-          : item
-      )
-    );
   };
 
   // Modify filter logic to handle "returned" items separately
