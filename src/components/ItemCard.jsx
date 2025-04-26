@@ -22,25 +22,26 @@ export default function ItemCard({
           <div className="relative w-full aspect-square mb-1">
             {/* Buttons Container */}
             {isOwner && (
-              <div className="absolute top-2 left-5 right-2 z-10 flex w-full">
-                {/* Mark as Returned Button */}
-                <button
-                  onClick={() => onToggleReturned(item.id, item.is_returned)}
-                  className="absolute -top-5 left-39 text-indigo-600 hover:text-indigo-700 text-xs font-semibold border border-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105"
-                >
-                  {item.is_returned ? "Unmark Returned" : "Mark as Returned"}
-                </button>
+  <div className="absolute -top-4 left-2 right-2 z-10 flex justify-between">
+    {/* Mark as Returned Button */}
+    <button
+      onClick={() => onToggleReturned(item.id, item.is_returned)}
+      className="text-indigo-600 hover:text-indigo-700 text-xs font-semibold border border-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105"
+    >
+      {item.is_returned ? "Unmark Returned" : "Mark as Returned"}
+    </button>
 
-                {/* Delete Button */}
-                <button
-                  onClick={() => onDelete(item.id)}
-                  className="absolute -top-5 -right-1 text-red-600 hover:text-red-700 text-xs font-semibold border border-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105"
-                >
-                  <span className="sr-only">Delete</span>
-                  Remove Post
-                </button>
-              </div>
-            )}
+    {/* Delete Button */}
+    <button
+      onClick={() => onDelete(item.id)}
+      className="text-red-600 hover:text-red-700 text-xs font-semibold border border-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105"
+    >
+      <span className="sr-only">Delete</span>
+      Remove Post
+    </button>
+  </div>
+)}
+
 
             <div className="absolute inset-0">
               <img
