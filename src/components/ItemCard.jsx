@@ -12,10 +12,10 @@ export default function ItemCard({
 
   return (
     <motion.div
-      className="bg-white p-4 rounded-2xl shadow-md transition-shadow flex flex-col h-full relative"
+      layout
+      className="bg-white p-4 rounded-2xl shadow-md hover:shadow-lg transition-shadow flex flex-col h-full relative"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      layout
     >
       {/* Image */}
       {item.image_url && (
@@ -27,7 +27,7 @@ export default function ItemCard({
                 {/* Mark as Returned Button */}
                 <button
                   onClick={() => onToggleReturned(item.id, item.is_returned)}
-                  className="text-indigo-600 text-xs font-semibold border border-indigo-700 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200"
+                  className="text-indigo-600 hover:text-indigo-700 text-xs font-semibold border border-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105"
                 >
                   {item.is_returned ? "Unmark Returned" : "Mark as Returned"}
                 </button>
@@ -35,7 +35,7 @@ export default function ItemCard({
                 {/* Delete Button */}
                 <button
                   onClick={() => onDelete(item.id)}
-                  className="text-red-600 text-xs font-semibold border border-red-700 bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200"
+                  className="text-red-600 hover:text-red-700 text-xs font-semibold border border-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105"
                 >
                   <span className="sr-only">Delete</span>
                   Remove Post
@@ -57,7 +57,6 @@ export default function ItemCard({
               />
             </div>
           </div>
-
           <p className="text-xs text-gray-600 text-center mb-4">
             Tap image to see Full Screen
           </p>
@@ -71,17 +70,17 @@ export default function ItemCard({
 
       {/* Info Box */}
       <div className="flex-1 border border-gray-200 rounded-lg p-4 bg-gray-50 space-y-4 mt-1">
-        {/* Status Block */}
+        {/* STATUS BLOCK */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <span
-              className={`px-3 py-1 rounded-full font-medium text-xs shadow-md ${
+              className={`px-3 py-1 rounded-full font-medium text-xs ${
                 item.status === "lost"
                   ? "bg-red-100 text-red-700"
                   : item.status === "found"
                   ? "bg-green-100 text-green-700"
                   : "bg-gray-100 text-gray-600"
-              }`}
+              } shadow-md`}
             >
               {item.status.toUpperCase()}
             </span>
@@ -115,17 +114,13 @@ export default function ItemCard({
         {/* Description */}
         <div className="-mt-2 border border-gray-400 p-5 rounded-lg bg-yellow-200">
           <p className="-mt-3 text-xs font-semibold text-gray-700 mb-1">Description:</p>
-          <p className="text-xs text-gray-600 break-words line-clamp-5">
-            {item.description}
-          </p>
+          <p className="text-xs text-gray-600 break-words line-clamp-5">{item.description}</p>
         </div>
 
         {/* Contact */}
         <div>
           <p className="text-xs font-semibold text-gray-500 mb-1">Contact:</p>
-          <p className="-mt-1 text-xs text-gray-500 break-words">
-            {item.contact_info}
-          </p>
+          <p className="-mt-1 text-xs text-gray-500 break-words">{item.contact_info}</p>
         </div>
       </div>
     </motion.div>
