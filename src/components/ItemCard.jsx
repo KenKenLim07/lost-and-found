@@ -15,6 +15,7 @@ export default function ItemCard({
       className="bg-white p-4 rounded-2xl shadow-md transition-shadow flex flex-col h-full relative"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      layout
     >
       {/* Image */}
       {item.image_url && (
