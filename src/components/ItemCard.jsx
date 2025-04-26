@@ -20,6 +20,28 @@ export default function ItemCard({
       {item.image_url && (
         <>
           <div className="relative w-full aspect-square mb-1">
+            {/* Buttons Container */}
+            {isOwner && (
+              <div className="absolute top-2 left-5 right-2 z-10 flex w-full">
+                {/* Mark as Returned Button */}
+                <button
+                  onClick={() => onToggleReturned(item.id, item.is_returned)}
+                  className="absolute -top-5 left-39 text-indigo-600 hover:text-indigo-700 text-xs font-semibold border border-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105"
+                >
+                  {item.is_returned ? "Unmark Returned" : "Mark as Returned"}
+                </button>
+
+                {/* Delete Button */}
+                <button
+                  onClick={() => onDelete(item.id)}
+                  className="absolute -top-5 -right-1 text-red-600 hover:text-red-700 text-xs font-semibold border border-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105"
+                >
+                  <span className="sr-only">Delete</span>
+                  Remove Post
+                </button>
+              </div>
+            )}
+
             <div className="absolute inset-0">
               <img
                 src={item.image_url}
@@ -42,40 +64,13 @@ export default function ItemCard({
         </>
       )}
 
-      {/* Title + Action Buttons */}
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="border border-gray-300 rounded-2xl text-lg font-semibold text-center text-black inline-block py-2 px-4 bg-gradient-to-r from-blue-100 to-blue-200 shadow-md">
-          {item.title}
-        </h3>
-
-        {/* Buttons for Owner */}
-        {isOwner && (
-          <div className="flex space-x-2">
-            {/* Mark as Returned Button */}
-            <button
-              onClick={() => onToggleReturned(item.id, item.is_returned)}
-              className={`text-xs ${
-                item.is_returned
-                  ? "text-yellow-600 bg-yellow-100 hover:bg-yellow-200 border border-yellow-300"
-                  : "text-indigo-600 bg-indigo-100 hover:bg-indigo-200 border border-indigo-300"
-              } px-3 py-1 rounded-full transition-all duration-200`}
-            >
-              {item.is_returned ? "Unmark" : "Mark as Returned"}
-            </button>
-
-            {/* Remove Post Button */}
-            <button
-              onClick={() => onDelete(item.id)}
-              className="text-xs text-red-600 hover:text-red-700 border border-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 px-3 py-1 rounded-full transition-all duration-200 transform hover:scale-105"
-            >
-              Remove
-            </button>
-          </div>
-        )}
-      </div>
+      {/* Title */}
+      <h3 className="border border-gray-300 rounded-2xl text-lg font-semibold text-center text-black inline-block py-2 px-4 bg-gradient-to-r from-blue-100 to-blue-200 shadow-md -mt-3">
+        {item.title}
+      </h3>
 
       {/* Info Box */}
-      <div className="flex-1 border border-gray-200 rounded-lg p-4 bg-gray-50 space-y-4">
+      <div className="flex-1 border border-gray-200 rounded-lg p-4 bg-gray-50 space-y-4 mt-1">
         {/* STATUS BLOCK */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
@@ -118,15 +113,15 @@ export default function ItemCard({
         </div>
 
         {/* Description */}
-        <div className="border border-gray-400 p-4 rounded-lg bg-yellow-200">
-          <p className="text-sm font-semibold text-gray-700 mb-1">Description</p>
-          <p className="text-sm text-gray-600 line-clamp-3">{item.description}</p>
+        <div className="-mt-2 border border-gray-400 p-5 rounded-lg bg-yellow-200">
+          <p className="-mt-3 text-xs font-semibold text-gray-700 mb-1">Description:</p>
+          <p className="text-xs text-gray-600 break-words line-clamp-5">{item.description}</p>
         </div>
 
         {/* Contact */}
         <div>
-          <p className="text-sm font-semibold text-gray-700 mb-1">Contact</p>
-          <p className="text-xs text-gray-500 break-words">{item.contact_info}</p>
+          <p className="text-xs font-semibold text-gray-500 mb-1">Contact:</p>
+          <p className="-mt-1 text-xs text-gray-500 break-words">{item.contact_info}</p>
         </div>
       </div>
     </motion.div>
