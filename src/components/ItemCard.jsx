@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ItemCard({
   item,
@@ -9,6 +9,15 @@ export default function ItemCard({
   onToggleReturned,
 }) {
   const [isLoading, setLoading] = useState(true);
+  const [windowSize, setWindowSize] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 0
+  );
+
+  useEffect(() => {
+    const handleResize = () => setWindowSize(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <motion.div
@@ -22,39 +31,37 @@ export default function ItemCard({
           <div className="relative w-full aspect-square mb-1">
             {/* Buttons Container */}
             {isOwner && (
-  <div className="absolute -top-4 left-2 right-2 z-10 flex justify-between">
-    {/* Mark as Returned Button */}
-    <button
-      onClick={() => onToggleReturned(item.id, item.is_returned)}
-      className="text-indigo-600 hover:text-indigo-700 text-xs font-semibold border border-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105"
-    >
-      {item.is_returned ? "Unmark Returned" : "Mark as Returned"}
-    </button>
+              <div className="absolute -top-4 left-2 right-2 z-10 flex justify-between">
+                {/* Mark as Returned Button */}
+                <button
+                  onClick={() => onToggleReturned(item.id, item.is_returned)}
+                  className="text-indigo-600 hover:text-indigo-700 text-xs font-semibold border border-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105"
+                >
+                  {item.is_returned ? "Unmark Returned" : "Mark as Returned"}
+                </button>
 
-    {/* Delete Button */}
-    <button
-      onClick={() => onDelete(item.id)}
-      className="text-red-600 hover:text-red-700 text-xs font-semibold border border-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105"
-    >
-      <span className="sr-only">Delete</span>
-      Remove Post
-    </button>
-  </div>
-)}
-
+                {/* Delete Button */}
+                <button
+                  onClick={() => onDelete(item.id)}
+                  className="text-red-600 hover:text-red-700 text-xs font-semibold border border-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105"
+                >
+                  <span className="sr-only">Delete</span>
+                  Remove Post
+                </button>
+              </div>
+            )}
 
             <div className="absolute inset-0">
               <img
+                key={windowSize} // force re-render on rotation
                 src={item.image_url}
                 alt={item.title}
-                className={`w-full h-full object-cover rounded-xl cursor-pointer hover:scale-105 transition-all duration-700 ease-in-out ${
+                className={`w-full h-full object-cover rounded-xl cursor-pointer transition-all duration-700 ease-in-out ${
                   isLoading
                     ? "grayscale blur-2xl scale-110"
                     : "grayscale-0 blur-0 scale-100"
-                }`}
+                } md:hover:scale-105`}
                 onClick={() => onImageClick(item.image_url)}
-                layout="fill"
-                objectFit="cover"
                 onLoad={() => setLoading(false)}
               />
             </div>
@@ -87,7 +94,7 @@ export default function ItemCard({
               {item.status.toUpperCase()}
             </span>
 
-            <div className="text-xs text-gray-400">
+            <div className="text-xs text-gray-400 text-right">
               Posted:
               <br />
               <span className="font-medium">
@@ -102,10 +109,10 @@ export default function ItemCard({
                 RETURNED
               </span>
 
-              <div className="text-xs text-gray-400">
+              <div className="text-xs text-gray-400 text-right">
                 Returned:
                 <br />
-                <span className="font-medium font">
+                <span className="font-medium">
                   {new Date(item.date_returned).toLocaleDateString()}
                 </span>
               </div>
