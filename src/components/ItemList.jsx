@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useImperativeHandle, forwardRef } from "react";
 import { supabase } from "../lib/supabase";
 import ItemCard from "./ItemCard";
 import FullScreenImageModal from "./FullScreenImageModal";
 import SearchFilter from "./SearchFilter";
 
-export default function ItemList() {
+const ItemList = forwardRef((props, ref) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -12,28 +12,62 @@ export default function ItemList() {
   const [userId, setUserId] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
 
+  const fetchItems = async () => {
+    setLoading(true);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) setUserId(user.id);
+
+    const { data, error } = await supabase
+      .from("items")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) console.error("Error fetching items:", error.message);
+    else setItems(data);
+
+    setLoading(false);
+  };
+
+  // Expose the refresh function to parent components
+  useImperativeHandle(ref, () => ({
+    refresh: fetchItems
+  }));
+
   useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
+    fetchItems();
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    // Set up real-time subscription
+    const channel = supabase
+      .channel('items_channel')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'items'
+        },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            setItems(prevItems => [payload.new, ...prevItems]);
+          } else if (payload.eventType === 'DELETE') {
+            setItems(prevItems => prevItems.filter(item => item.id !== payload.old.id));
+          } else if (payload.eventType === 'UPDATE') {
+            setItems(prevItems =>
+              prevItems.map(item =>
+                item.id === payload.new.id ? payload.new : item
+              )
+            );
+          }
+        }
+      )
+      .subscribe();
 
-      if (user) setUserId(user.id);
-
-      const { data, error } = await supabase
-        .from("items")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) console.error("Error fetching items:", error.message);
-      else setItems(data);
-
-      setLoading(false);
-    }
-
-    fetchData();
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const handleDelete = async (itemId) => {
@@ -126,4 +160,6 @@ export default function ItemList() {
       />
     </div>
   );
-}
+});
+
+export default ItemList;

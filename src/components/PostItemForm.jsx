@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import { motion } from "framer-motion";
-export default function PostItemForm() {
+
+export default function PostItemForm({ user, onItemPosted }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("lost");
@@ -42,7 +43,8 @@ export default function PostItemForm() {
         status,
         contact_info: contactInfo,
         image_url: imageUrl,
-        created_at: new Date().toISOString(), // explicitly include timestamp
+        created_at: new Date().toISOString(),
+        user_id: user.id,
       },
     ]);
 
@@ -50,14 +52,18 @@ export default function PostItemForm() {
       alert("Failed to post item");
       console.error(insertError.message);
     } else {
-
       setTitle("");
       setDescription("");
       setStatus("lost");
       setContactInfo("");
       setImageFile(null);
       setSuccessMsg("Item posted successfully!");
-      setTimeout(() => setSuccessMsg(""), 3000); // hide after 3s
+      setTimeout(() => setSuccessMsg(""), 3000);
+      
+      // Call the refresh function after successful upload
+      if (onItemPosted) {
+        onItemPosted();
+      }
     }
 
     setLoading(false);

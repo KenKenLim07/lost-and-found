@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 export default function ItemCard({
   item,
@@ -7,6 +8,8 @@ export default function ItemCard({
   isOwner,
   onToggleReturned,
 }) {
+  const [isLoading, setLoading] = useState(true);
+
   return (
     <motion.div
       className="bg-white p-4 rounded-2xl shadow-md hover:shadow-lg transition-shadow flex flex-col h-full relative"
@@ -15,17 +18,28 @@ export default function ItemCard({
     >
       {/* Image */}
       {item.image_url && (
-        <div className="relative w-full aspect-w-16 aspect-h-9 sm:aspect-w-4 sm:aspect-h-3 mb-4">
-          <img
-            src={item.image_url}
-            alt={item.title}
-            className="w-full h-full object-cover rounded-xl cursor-pointer hover:scale-105 transition-transform duration-300"
-            onClick={() => onImageClick(item.image_url)}
-          />
-          <p className="text-xs text-gray-400 text-center mt-1">
+        <>
+          <div className="relative w-full aspect-square mb-1">
+            <div className="absolute inset-0">
+              <img
+                src={item.image_url}
+                alt={item.title}
+                className={`w-full h-full object-cover rounded-xl cursor-pointer hover:scale-105 transition-all duration-700 ease-in-out ${
+                  isLoading
+                    ? "grayscale blur-2xl scale-110"
+                    : "grayscale-0 blur-0 scale-100"
+                }`}
+                onClick={() => onImageClick(item.image_url)}
+                layout="fill"
+                objectFit="cover"
+                onLoad={() => setLoading(false)}
+              />
+            </div>
+          </div>
+          <p className="text-xs text-gray-600 text-center mb-4">
             Tap image to see Full Screen
           </p>
-        </div>
+        </>
       )}
 
       {/* Title */}

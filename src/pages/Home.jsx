@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
-
+import ItemCard from '../components/ItemCard'
 
 const Home = () => {
   const [items, setItems] = useState([])
@@ -20,6 +20,40 @@ const Home = () => {
     }
 
     fetchItems()
+
+    // Set up real-time subscription
+    const channel = supabase
+      .channel('home_items_channel')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'items'
+        },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            // Add new item to the beginning of the list
+            setItems(prevItems => [payload.new, ...prevItems])
+          } else if (payload.eventType === 'DELETE') {
+            // Remove deleted item
+            setItems(prevItems => prevItems.filter(item => item.id !== payload.old.id))
+          } else if (payload.eventType === 'UPDATE') {
+            // Update modified item
+            setItems(prevItems =>
+              prevItems.map(item =>
+                item.id === payload.new.id ? payload.new : item
+              )
+            )
+          }
+        }
+      )
+      .subscribe()
+
+    // Cleanup subscription on component unmount
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [])
 
   // ✅ This return is the UI — outside of useEffect
@@ -38,7 +72,6 @@ const Home = () => {
       </div>
     </div>
   )
-  
 }
 
 export default Home

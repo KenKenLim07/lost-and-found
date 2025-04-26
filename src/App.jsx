@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import './index.css';
 import PostItemForm from "./components/PostItemForm";
 import ItemList from "./components/ItemList";
@@ -8,6 +9,7 @@ import { supabase } from "./lib/supabase";
 
 function App() {
   const user = useUser();
+  const itemListRef = useRef();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -26,8 +28,8 @@ function App() {
       <NavBar onSignOut={handleSignOut} />
 
       <div className="p-6">
-        <PostItemForm user={user} />
-        <ItemList  setItem/>
+        <PostItemForm user={user} onItemPosted={() => itemListRef.current?.refresh()} />
+        <ItemList ref={itemListRef} />
       </div>
     </div>
   );
