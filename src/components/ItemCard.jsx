@@ -42,16 +42,42 @@ export default function ItemCard({
         </>
       )}
 
-      {/* Title */}
-      <h3 className="border border-gray-300 rounded-2xl mt-2 text-lg font-semibold text-center text-black inline-block py-2 px-4 mb-4 bg-gradient-to-r from-blue-100 to-blue-200 shadow-md">
-        {item.title}
-      </h3>
+      {/* Title + Action Buttons */}
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="border border-gray-300 rounded-2xl text-lg font-semibold text-center text-black inline-block py-2 px-4 bg-gradient-to-r from-blue-100 to-blue-200 shadow-md">
+          {item.title}
+        </h3>
+
+        {/* Buttons for Owner */}
+        {isOwner && (
+          <div className="flex space-x-2">
+            {/* Mark as Returned Button */}
+            <button
+              onClick={() => onToggleReturned(item.id, item.is_returned)}
+              className={`text-xs ${
+                item.is_returned
+                  ? "text-yellow-600 bg-yellow-100 hover:bg-yellow-200 border border-yellow-300"
+                  : "text-indigo-600 bg-indigo-100 hover:bg-indigo-200 border border-indigo-300"
+              } px-3 py-1 rounded-full transition-all duration-200`}
+            >
+              {item.is_returned ? "Unmark" : "Mark as Returned"}
+            </button>
+
+            {/* Remove Post Button */}
+            <button
+              onClick={() => onDelete(item.id)}
+              className="text-xs text-red-600 hover:text-red-700 border border-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 px-3 py-1 rounded-full transition-all duration-200 transform hover:scale-105"
+            >
+              Remove
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Info Box */}
       <div className="flex-1 border border-gray-200 rounded-lg p-4 bg-gray-50 space-y-4">
         {/* STATUS BLOCK */}
         <div className="space-y-2">
-          {/* Old Status */}
           <div className="flex justify-between items-center">
             <span
               className={`px-3 py-1 rounded-full font-medium text-xs ${
@@ -65,7 +91,6 @@ export default function ItemCard({
               {item.status.toUpperCase()}
             </span>
 
-            {/* Date Posted */}
             <div className="text-xs text-gray-400">
               Posted:
               <br />
@@ -75,14 +100,12 @@ export default function ItemCard({
             </div>
           </div>
 
-          {/* New Status (Returned) */}
           {item.is_returned && (
             <div className="mt-2 flex justify-between items-center">
               <span className="px-3 py-1 rounded-full font-medium text-xs bg-purple-100 text-purple-700 shadow-md">
                 RETURNED
               </span>
 
-              {/* Date Returned */}
               <div className="text-xs text-gray-400">
                 Returned:
                 <br />
@@ -106,31 +129,6 @@ export default function ItemCard({
           <p className="text-xs text-gray-500 break-words">{item.contact_info}</p>
         </div>
       </div>
-
-      {/* Mark as Returned / Unmark */}
-      {isOwner && (
-        <button
-          onClick={() => onToggleReturned(item.id, item.is_returned)}
-          className={`mt-3 text-xs ${
-            item.is_returned
-              ? "text-yellow-600 bg-yellow-100 hover:bg-yellow-200 border border-yellow-300"
-              : "text-indigo-600 bg-indigo-100 hover:bg-indigo-200 border border-indigo-300"
-          } px-3 py-1 rounded-full transition-all duration-200`}
-        >
-          {item.is_returned ? "Unmark as Returned" : "Mark as Returned"}
-        </button>
-      )}
-
-      {/* Delete Button */}
-      {isOwner && (
-        <button
-          onClick={() => onDelete(item.id)}
-          className="absolute top-2 right-2 text-red-600 hover:text-red-700 text-xs font-semibold border border-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105"
-        >
-          <span className="sr-only">Delete</span>
-          Remove Post
-        </button>
-      )}
     </motion.div>
   );
 }
