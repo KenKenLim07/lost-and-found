@@ -217,16 +217,17 @@ export default function ItemCard({
                       : "Who returned/received the item?"}
                 </p>
                 <input
-                  type="text"
-                  placeholder={item.status === "lost" 
-                    ? "Name of person who returned it" 
-                    : item.status === "found" 
-                      ? "Name of person you returned it to" 
-                      : "Name"}
-                  value={returnedToName}
-                  onChange={(e) => setReturnedToName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
+  type="text"
+  placeholder={item.status === "lost" 
+    ? "Name of person who returned it" 
+    : item.status === "found" 
+      ? "Name of person you returned it to" 
+      : "Name"}
+  value={returnedToName}
+  onChange={(e) => setReturnedToName(e.target.value)}
+  className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-3 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500"
+/>
+
               </>
             )}
             <div className="flex space-x-2">
