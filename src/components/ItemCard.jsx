@@ -88,17 +88,18 @@ export default function ItemCard({
             </h3>
             
             {item.is_returned ? (
-              <p className="text-gray-600 mb-6">Are you sure you want to unmark this item as returned?</p>
+              <p className="text-gray-600 mb-6">Unmark as returned?</p>
             ) : (
               <>
                 <p className="text-gray-600 mb-4">{getReturnQuestion()}</p>
                 <input
-                  type="text"
-                  value={returnedTo}
-                  onChange={(e) => setReturnedTo(e.target.value)}
-                  placeholder="Enter name"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
+  type="text"
+  value={returnedTo}
+  onChange={(e) => setReturnedTo(e.target.value)}
+  placeholder="Enter name"
+  className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-base"
+/>
+
               </>
             )}
             
