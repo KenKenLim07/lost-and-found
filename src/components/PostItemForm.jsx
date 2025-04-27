@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import { motion } from "framer-motion";
 
@@ -10,94 +10,63 @@ export default function PostItemForm({ user, onItemPosted }) {
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    let interval;
-    if (loading) {
-      interval = setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 90) {
-            clearInterval(interval);
-            return 90;
-          }
-          return prev + 10;
-        });
-      }, 200);
-    } else {
-      setProgress(0);
-    }
-    return () => clearInterval(interval);
-  }, [loading]);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
-    setProgress(0);
 
-    try {
-      let imageUrl = "";
-      if (imageFile) {
-        const fileExt = imageFile.name.split(".").pop();
-        const fileName = `${Date.now()}.${fileExt}`;
+    let imageUrl = "";
+    if (imageFile) {
+      const fileExt = imageFile.name.split(".").pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const { data, error } = await supabase.storage
+        .from("item-images")
+        .upload(fileName, imageFile);
 
-        const { data, error: uploadError } = await supabase.storage
-          .from("item-images")
-          .upload(fileName, imageFile);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase
-          .storage
-          .from("item-images")
-          .getPublicUrl(fileName);
-
-        imageUrl = publicUrl;
+      if (error) {
+        alert("Image upload failed");
+        console.error(error.message);
+        setLoading(false);
+        return;
       }
 
-      const { error: insertError } = await supabase.from("items").insert([
-        {
-          title,
-          description,
-          status,
-          contact_info: contactInfo,
-          image_url: imageUrl,
-          created_at: new Date().toISOString(),
-          user_id: user.id,
-        },
-      ]);
-
-      if (insertError) throw insertError;
-
-      setProgress(100);
-      setTimeout(() => {
-        resetForm();
-        setSuccessMsg("Item posted successfully!");
-        setTimeout(() => setSuccessMsg(""), 3000);
-        if (onItemPosted) onItemPosted();
-      }, 500);
-
-    } catch (error) {
-      console.error(error.message);
-      alert("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("item-images").getPublicUrl(fileName);
+      imageUrl = publicUrl;
     }
-  }
 
-  function resetForm() {
-    setTitle("");
-    setDescription("");
-    setStatus("lost");
-    setContactInfo("");
-    setImageFile(null);
-  }
+    const { error: insertError } = await supabase.from("items").insert([
+      {
+        title,
+        description,
+        status,
+        contact_info: contactInfo,
+        image_url: imageUrl,
+        created_at: new Date().toISOString(),
+        user_id: user.id,
+      },
+    ]);
 
-  function handleImageChange(e) {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
+    if (insertError) {
+      alert("Failed to post item");
+      console.error(insertError.message);
+    } else {
+      setTitle("");
+      setDescription("");
+      setStatus("lost");
+      setContactInfo("");
+      setImageFile(null);
+      setSuccessMsg("Item posted successfully!");
+      setTimeout(() => setSuccessMsg(""), 3000);
+      
+      // Call the refresh function after successful upload
+      if (onItemPosted) {
+        onItemPosted();
+      }
     }
+
+    setLoading(false);
   }
 
   return (
@@ -107,11 +76,11 @@ export default function PostItemForm({ user, onItemPosted }) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <h2 className="text-2xl font-bold text-gray-800">Post a Lost or Found Item</h2>
+      <h2 className="text-xl font-semibold">Post a Lost or Found Item</h2>
 
       {successMsg && (
         <motion.div
-          className="bg-green-100 text-green-700 px-4 py-2 rounded-md text-sm text-center"
+          className="bg-green-100 text-green-700 px-4 py-2 rounded-md text-sm"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -124,7 +93,7 @@ export default function PostItemForm({ user, onItemPosted }) {
         placeholder="Item Title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-400"
+        className="w-full p-2 border rounded-md"
         required
       />
 
@@ -132,7 +101,7 @@ export default function PostItemForm({ user, onItemPosted }) {
         placeholder="Description"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-400"
+        className="w-full p-2 border rounded-md"
         rows={4}
       />
 
@@ -140,12 +109,12 @@ export default function PostItemForm({ user, onItemPosted }) {
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="w-full appearance-none p-3 pr-10 border rounded-md focus:ring-2 focus:ring-blue-400"
+          className="w-full appearance-none p-2 pr-10 border rounded-md"
         >
           <option value="lost">Lost</option>
           <option value="found">Found</option>
         </select>
-        <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+        <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-600">
           <svg
             className="w-4 h-4"
             fill="none"
@@ -163,56 +132,23 @@ export default function PostItemForm({ user, onItemPosted }) {
         placeholder="Contact Info (email or phone)"
         value={contactInfo}
         onChange={(e) => setContactInfo(e.target.value)}
-        className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-400"
+        className="w-full p-2 border rounded-md"
       />
 
-      {/* Custom File Upload */}
-      <div className="w-full">
-        <label htmlFor="image-upload" className="block w-full p-4 border-2 border-dashed rounded-md text-center cursor-pointer hover:border-blue-500 transition text-gray-500">
-          {imageFile ? (
-            <span className="text-gray-700 font-semibold">{imageFile.name}</span>
-          ) : (
-            <span>Click to upload an image</span>
-          )}
-        </label>
-        <input
-          id="image-upload"
-          type="file"
-          onChange={handleImageChange}
-          accept="image/*"
-          className="hidden"
-        />
-
-        {imageFile && (
-          <div className="mt-4 flex justify-center">
-            <img
-              src={URL.createObjectURL(imageFile)}
-              alt="Preview"
-              className="w-32 h-32 object-cover rounded-md shadow"
-            />
-          </div>
-        )}
-      </div>
+      <input
+        type="file"
+        onChange={(e) => setImageFile(e.target.files[0])}
+        accept="image/*"
+        className="w-full"
+      />
 
       <button
         type="submit"
-        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-md transition disabled:opacity-50"
+        className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
         disabled={loading}
       >
         {loading ? "Posting..." : "Post Item"}
       </button>
-
-      {/* Loading Bar */}
-      {loading && (
-        <div className="w-full h-1 bg-gray-200 rounded-full overflow-hidden mt-2">
-          <motion.div
-            className="h-full bg-blue-500"
-            initial={{ width: "0%" }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.2 }}
-          />
-        </div>
-      )}
     </motion.form>
   );
 }
