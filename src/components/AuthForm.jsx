@@ -61,7 +61,7 @@ export default function AuthForm() {
         variants={itemVariants}
       >
         <motion.h1 
-          className="text-2xl font-bold text-center bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
+          className="text-2xl font-bold text-center text-blue-600"
           variants={itemVariants}
         >
           Lost & Found
@@ -115,7 +115,7 @@ export default function AuthForm() {
             className={`w-full py-3 rounded-xl text-white font-medium transition-all ${
               isLoading 
                 ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+                : 'bg-blue-600 hover:bg-blue-700'
             }`}
             type="submit"
             disabled={isLoading}
