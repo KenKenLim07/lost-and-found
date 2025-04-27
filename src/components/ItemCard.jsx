@@ -9,6 +9,8 @@ export default function ItemCard({
 }) {
   const [isLoading, setLoading] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showReturnConfirm, setShowReturnConfirm] = useState(false);
+  const [returnedTo, setReturnedTo] = useState("");
 
   const handleDeleteClick = () => {
     setShowDeleteConfirm(true);
@@ -21,6 +23,33 @@ export default function ItemCard({
 
   const handleCancelDelete = () => {
     setShowDeleteConfirm(false);
+  };
+
+  const handleReturnClick = () => {
+    setShowReturnConfirm(true);
+  };
+
+  const handleConfirmReturn = () => {
+    if (item.is_returned) {
+      // If unmarking, don't pass a name
+      onToggleReturned(item.id, item.is_returned);
+    } else {
+      // If marking as returned, pass the name
+      onToggleReturned(item.id, item.is_returned, returnedTo);
+    }
+    setShowReturnConfirm(false);
+    setReturnedTo("");
+  };
+
+  const handleCancelReturn = () => {
+    setShowReturnConfirm(false);
+    setReturnedTo("");
+  };
+
+  const getReturnQuestion = () => {
+    return item.status === "found" 
+      ? "Who did you return this item to?" 
+      : "Who returned this item to you?";
   };
 
   return (
@@ -44,6 +73,48 @@ export default function ItemCard({
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Return Confirmation Modal */}
+      {showReturnConfirm && (
+        <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-xl">
+            <h3 className="text-lg font-semibold mb-4">
+              {item.is_returned ? "Unmark as Returned" : "Mark as Returned"}
+            </h3>
+            
+            {item.is_returned ? (
+              <p className="text-gray-600 mb-6">Are you sure you want to unmark this item as returned?</p>
+            ) : (
+              <>
+                <p className="text-gray-600 mb-4">{getReturnQuestion()}</p>
+                <input
+                  type="text"
+                  value={returnedTo}
+                  onChange={(e) => setReturnedTo(e.target.value)}
+                  placeholder="Enter name"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </>
+            )}
+            
+            <div className="flex justify-end space-x-3">
+              <button 
+                onClick={handleCancelReturn}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleConfirmReturn}
+                disabled={!item.is_returned && !returnedTo.trim()}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Confirm
               </button>
             </div>
           </div>
@@ -127,6 +198,12 @@ export default function ItemCard({
                   <span className="font-medium">
                     {new Date(item.date_returned).toLocaleDateString()}
                   </span>
+                  {item.returned_to && (
+                    <>
+                      <br />
+                      To: {item.returned_to}
+                    </>
+                  )}
                 </>
               ) : (
                 <>Not yet returned</>
@@ -155,7 +232,7 @@ export default function ItemCard({
         {isOwner && (
           <div className="mt-4 flex justify-between items-center">
             <button
-              onClick={() => onToggleReturned(item.id, item.is_returned)}
+              onClick={handleReturnClick}
               className="flex-1 text-indigo-600 hover:text-indigo-700 text-xs font-semibold border border-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105 mr-2"
             >
               {item.is_returned ? "Unmark Returned" : "Mark as Returned"}

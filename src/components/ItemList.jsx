@@ -80,7 +80,7 @@ const ItemList = forwardRef((props, ref) => {
     }
   };
 
-  const handleToggleReturned = async (itemId, isReturned) => {
+  const handleToggleReturned = async (itemId, isReturned, returnedTo = null) => {
     const currentDate = isReturned ? null : new Date().toISOString();
 
     const { error } = await supabase
@@ -88,6 +88,7 @@ const ItemList = forwardRef((props, ref) => {
       .update({
         is_returned: !isReturned,
         date_returned: currentDate,
+        returned_to: returnedTo
       })
       .eq("id", itemId);
 
@@ -100,7 +101,7 @@ const ItemList = forwardRef((props, ref) => {
     setItems((prevItems) =>
       prevItems.map((item) =>
         item.id === itemId
-          ? { ...item, is_returned: !isReturned, date_returned: currentDate }
+          ? { ...item, is_returned: !isReturned, date_returned: currentDate, returned_to: returnedTo }
           : item
       )
     );
