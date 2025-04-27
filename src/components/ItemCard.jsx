@@ -176,84 +176,85 @@ export default function ItemCard({
         )}
       </div>
 
-      {/* Delete Confirmation Toast */}
-      {showDeleteConfirm && (
-        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-4 z-50 animate-fadeIn max-w-xs w-full">
-          <div className="flex flex-col items-center">
-            <p className="text-sm text-gray-700 mb-3 text-center">Delete this item?</p>
-            <div className="flex space-x-2">
-              <button
-                onClick={handleCancelDelete}
-                className="px-3 py-1 text-xs bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirmDelete}
-                className="px-3 py-1 text-xs bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+     {/* Delete Confirmation Toast */}
+{showDeleteConfirm && (
+  <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-4 z-50 animate-fadeIn max-w-sm sm:max-w-xs w-full">
+    <div className="flex flex-col items-center">
+      <p className="text-sm sm:text-base text-gray-700 mb-3 text-center">Delete this item?</p>
+      <div className="flex space-x-2">
+        <button
+          onClick={handleCancelDelete}
+          className="px-3 py-1 text-xs sm:text-sm bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleConfirmDelete}
+          className="px-3 py-1 text-xs sm:text-sm bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
-      {/* Return Confirmation Toast */}
-      {showReturnConfirm && (
-        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-4 z-50 animate-fadeIn max-w-xs w-full">
-          <div className="flex flex-col items-center">
-            <p className="text-sm text-gray-700 mb-3 text-center">
-              {item.is_returned ? "Unmark as returned?" : "Mark as returned?"}
-            </p>
-            {!item.is_returned && (
-              <>
-                <p className="text-xs text-gray-600 mb-2 text-center">
-                  {item.status === "lost" 
-                    ? "Who returned your item?" 
-                    : item.status === "found" 
-                      ? "Who did you return the item to?" 
-                      : "Who returned/received the item?"}
-                </p>
-                <div className="relative w-full mb-3">
-                  <input
-                    type="text"
-                    id="returnedToName"
-                    placeholder=" "
-                    value={returnedToName}
-                    onChange={(e) => setReturnedToName(e.target.value)}
-                    className="peer w-full px-3 pt-4 pb-2 border border-gray-300 rounded-lg text-[16px] focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                  <label
-                    htmlFor="returnedToName"
-                    className="absolute text-gray-500 text-sm left-3 top-2 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm"
-                  >
-                    {item.status === "lost"
-                      ? "Name of person who returned it"
-                      : item.status === "found"
-                        ? "Name of person you returned it to"
-                        : "Name"}
-                  </label>
-                </div>
-              </>
-            )}
-            <div className="flex space-x-2">
-              <button
-                onClick={handleCancelReturn}
-                className="px-3 py-1 text-xs bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirmReturn}
-                className="px-3 py-1 text-xs bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors"
-              >
-                {item.is_returned ? "Unmark" : "Confirm"}
-              </button>
-            </div>
+{/* Return Confirmation Toast */}
+{showReturnConfirm && (
+  <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-4 z-50 animate-fadeIn max-w-sm sm:max-w-xs w-full">
+    <div className="flex flex-col items-center">
+      <p className="text-sm sm:text-base text-gray-700 mb-3 text-center">
+        {item.is_returned ? "Unmark as returned?" : "Mark as returned?"}
+      </p>
+      {!item.is_returned && (
+        <>
+          <p className="text-xs sm:text-sm text-gray-600 mb-2 text-center">
+            {item.status === "lost" 
+              ? "Who returned your item?" 
+              : item.status === "found" 
+                ? "Who did you return the item to?" 
+                : "Who returned/received the item?"}
+          </p>
+          <div className="relative w-full mb-3">
+            <input
+              type="text"
+              id="returnedToName"
+              placeholder=" "
+              value={returnedToName}
+              onChange={(e) => setReturnedToName(e.target.value)}
+              className="peer w-full px-3 pt-4 pb-2 border border-gray-300 rounded-lg text-[16px] focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <label
+              htmlFor="returnedToName"
+              className="absolute text-gray-500 text-sm left-3 top-2 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm"
+            >
+              {item.status === "lost"
+                ? "Name of person who returned it"
+                : item.status === "found"
+                  ? "Name of person you returned it to"
+                  : "Name"}
+            </label>
           </div>
-        </div>
+        </>
       )}
+      <div className="flex space-x-2">
+        <button
+          onClick={handleCancelReturn}
+          className="px-3 py-1 text-xs sm:text-sm bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleConfirmReturn}
+          className="px-3 py-1 text-xs sm:text-sm bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors"
+        >
+          {item.is_returned ? "Unmark" : "Confirm"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }
