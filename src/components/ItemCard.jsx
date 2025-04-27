@@ -40,7 +40,8 @@ export default function ItemCard({
       }
       return;
     }
-    
+
+    // Calling the onToggleReturned prop to update the returned status
     onToggleReturned(item.id, item.is_returned, returnedToName);
     setShowReturnConfirm(false);
     setReturnedToName("");
@@ -53,7 +54,6 @@ export default function ItemCard({
 
   return (
     <div className="bg-white p-4 rounded-2xl shadow-md hover:shadow-lg transition-all duration-500 ease-in-out animate-fadeIn flex flex-col h-full relative">
-      
       {/* Image Section */}
       {item.image_url && (
         <>
@@ -85,7 +85,6 @@ export default function ItemCard({
 
       {/* Info Section */}
       <div className="flex-1 border border-gray-200 rounded-lg p-4 bg-gray-50 space-y-4 mt-2 flex flex-col justify-between">
-
         {/* Status Block */}
         <div className="space-y-2">
           {/* Status + Posted Date */}
@@ -217,27 +216,25 @@ export default function ItemCard({
                       : "Who returned/received the item?"}
                 </p>
                 <div className="relative w-full mb-3">
-  <input
-    type="text"
-    id="returnedToName"
-    placeholder=" "
-    value={returnedToName}
-    onChange={(e) => setReturnedToName(e.target.value)}
-    className="peer w-full px-3 pt-4 pb-2 border border-gray-300 rounded-lg text-[16px] focus:outline-none focus:ring-2 focus:ring-indigo-500"
-  />
-  <label
-    htmlFor="returnedToName"
-    className="absolute text-gray-500 text-sm left-3 top-2 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm"
-  >
-    {item.status === "lost"
-      ? "Name of person who returned it"
-      : item.status === "found"
-        ? "Name of person you returned it to"
-        : "Name"}
-  </label>
-</div>
-
-
+                  <input
+                    type="text"
+                    id="returnedToName"
+                    placeholder=" "
+                    value={returnedToName}
+                    onChange={(e) => setReturnedToName(e.target.value)}
+                    className="peer w-full px-3 pt-4 pb-2 border border-gray-300 rounded-lg text-[16px] focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <label
+                    htmlFor="returnedToName"
+                    className="absolute text-gray-500 text-sm left-3 top-2 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm"
+                  >
+                    {item.status === "lost"
+                      ? "Name of person who returned it"
+                      : item.status === "found"
+                        ? "Name of person you returned it to"
+                        : "Name"}
+                  </label>
+                </div>
               </>
             )}
             <div className="flex space-x-2">
