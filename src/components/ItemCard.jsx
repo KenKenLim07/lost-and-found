@@ -216,17 +216,27 @@ export default function ItemCard({
                       ? "Who did you return the item to?" 
                       : "Who returned/received the item?"}
                 </p>
-                <input
-  type="text"
-  placeholder={item.status === "lost" 
-    ? "Name of person who returned it" 
-    : item.status === "found" 
-      ? "Name of person you returned it to" 
-      : "Name"}
-  value={returnedToName}
-  onChange={(e) => setReturnedToName(e.target.value)}
-  className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-3 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500"
-/>
+                <div className="relative w-full mb-3">
+  <input
+    type="text"
+    id="returnedToName"
+    placeholder=" "
+    value={returnedToName}
+    onChange={(e) => setReturnedToName(e.target.value)}
+    className="peer w-full px-3 pt-4 pb-2 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-indigo-500"
+  />
+  <label
+    htmlFor="returnedToName"
+    className="absolute text-gray-500 text-sm left-3 top-2 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm"
+  >
+    {item.status === "lost"
+      ? "Name of person who returned it"
+      : item.status === "found"
+        ? "Name of person you returned it to"
+        : "Name"}
+  </label>
+</div>
+
 
               </>
             )}
