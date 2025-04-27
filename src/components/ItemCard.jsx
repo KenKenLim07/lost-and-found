@@ -223,7 +223,7 @@ export default function ItemCard({
     placeholder=" "
     value={returnedToName}
     onChange={(e) => setReturnedToName(e.target.value)}
-    className="peer w-full px-3 pt-4 pb-2 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    className="peer w-full px-3 pt-4 pb-2 border border-gray-300 rounded-lg text-[16px] focus:outline-none focus:ring-2 focus:ring-indigo-500"
   />
   <label
     htmlFor="returnedToName"
