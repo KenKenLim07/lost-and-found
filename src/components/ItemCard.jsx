@@ -175,21 +175,23 @@ export default function ItemCard({
                   loading="lazy"
                 />
               )}
+              
+              {/* Tap to view full screen text - moved inside image container */}
+              <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs py-1 text-center rounded-b-xl border-t border-gray-700">
+                Tap image to see Full Screen
+              </div>
             </div>
           </div>
-          <p className="text-xs text-gray-600 text-center mb-4 -mt-2">
-            Tap image to see Full Screen
-          </p>
         </>
       )}
 
       {/* Title */}
-      <h3 className="-mt-4 border border-gray-300 rounded-2xl text-lg font-semibold text-center text-black inline-block py-2 px-4 bg-gradient-to-r from-blue-100 to-blue-200 shadow-md">
+      <h3 className="-mt-1 border border-gray-300 rounded-2xl text-lg font-semibold text-center text-black inline-block py-2 px-4 bg-gradient-to-r from-blue-100 to-blue-200 shadow-md">
         {item.title}
       </h3>
 
       {/* Info Section */}
-      <div className="flex-1 border border-gray-200 rounded-lg p-4 bg-gray-50 space-y-4 mt-2 flex flex-col justify-between">
+      <div className="flex-1 border border-gray-200 rounded-lg p-4 bg-gray-50 space-y-4 mt-1 flex flex-col justify-between">
 
         {/* Status Block */}
         <div className="space-y-2">
@@ -231,17 +233,11 @@ export default function ItemCard({
             <div className="text-xs text-gray-400 text-right">
               {item.is_returned ? (
                 <>
-                  Returned:
+                  Returned to: {item.returned_to}
                   <br />
                   <span className="font-medium">
                     {new Date(item.date_returned).toLocaleDateString()}
                   </span>
-                  {item.returned_to && (
-                    <>
-                      <br />
-                      To: {item.returned_to}
-                    </>
-                  )}
                 </>
               ) : (
                 <>Not yet returned</>
@@ -265,26 +261,26 @@ export default function ItemCard({
             {item.contact_info}
           </p>
         </div>
-
-        {/* Owner Actions (bottom buttons) */}
-        {isOwner && (
-          <div className="mt-4 flex justify-between items-center">
-            <button
-              onClick={handleReturnClick}
-              className="flex-1 text-indigo-600 hover:text-indigo-700 text-xs font-semibold border border-indigo-700 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105 mr-2"
-            >
-              {item.is_returned ? "Unmark Returned" : "Mark as Returned"}
-            </button>
-
-            <button
-              onClick={handleDeleteClick}
-              className="flex-1 text-red-600 hover:text-red-700 text-xs font-semibold border border-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105"
-            >
-              Remove Post
-            </button>
-          </div>
-        )}
       </div>
+
+      {/* Owner Actions (bottom buttons) - Moved outside the info section */}
+      {isOwner && (
+        <div className="-mt-2 flex justify-between items-center">
+          <button
+            onClick={handleReturnClick}
+            className="flex-1 text-black-600 hover:text-indigo-700 text-xs font-semibold border border-green-700 bg-green-100 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105 mr-2"
+          >
+            {item.is_returned ? "Unmark Returned" : "Mark as Returned"}
+          </button>
+
+          <button
+            onClick={handleDeleteClick}
+            className="flex-1 text-black-600 hover:text-red-700 text-xs font-semibold border border-red-700 bg-red-100 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 px-3 py-2 rounded-full shadow-md transition-all duration-200 transform hover:scale-105"
+          >
+            Remove Post
+          </button>
+        </div>
+      )}
     </div>
   );
 }
