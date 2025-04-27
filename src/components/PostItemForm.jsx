@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import { motion } from "framer-motion";
+import imageCompression from "browser-image-compression";
 
 export default function PostItemForm({ user, onItemPosted }) {
   const [title, setTitle] = useState("");
@@ -11,29 +12,58 @@ export default function PostItemForm({ user, onItemPosted }) {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
+  // Compress image before upload
+  const compressImage = async (file) => {
+    const options = {
+      maxSizeMB: 0.5, // Compress to 500KB max
+      maxWidthOrHeight: 1200, // Limit dimensions
+      useWebWorker: true, // Use web worker for better performance
+    };
+
+    try {
+      const compressedFile = await imageCompression(file, options);
+      console.log("Original size:", file.size / 1024 / 1024, "MB");
+      console.log("Compressed size:", compressedFile.size / 1024 / 1024, "MB");
+      return compressedFile;
+    } catch (error) {
+      console.error("Error compressing image:", error);
+      return file; // Return original file if compression fails
+    }
+  };
+
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
 
     let imageUrl = "";
     if (imageFile) {
-      const fileExt = imageFile.name.split(".").pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      const { data, error } = await supabase.storage
-        .from("item-images")
-        .upload(fileName, imageFile);
+      try {
+        // Compress the image before uploading
+        const compressedImage = await compressImage(imageFile);
+        
+        const fileExt = compressedImage.name.split(".").pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        const { data, error } = await supabase.storage
+          .from("item-images")
+          .upload(fileName, compressedImage);
 
-      if (error) {
-        alert("Image upload failed");
-        console.error(error.message);
+        if (error) {
+          alert("Image upload failed");
+          console.error(error.message);
+          setLoading(false);
+          return;
+        }
+
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("item-images").getPublicUrl(fileName);
+        imageUrl = publicUrl;
+      } catch (error) {
+        console.error("Error processing image:", error);
+        alert("Error processing image. Please try again.");
         setLoading(false);
         return;
       }
-
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("item-images").getPublicUrl(fileName);
-      imageUrl = publicUrl;
     }
 
     const { error: insertError } = await supabase.from("items").insert([

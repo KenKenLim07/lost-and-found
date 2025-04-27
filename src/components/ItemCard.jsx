@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function ItemCard({
   item,
@@ -11,6 +11,33 @@ export default function ItemCard({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showReturnConfirm, setShowReturnConfirm] = useState(false);
   const [returnedTo, setReturnedTo] = useState("");
+  const [isInView, setIsInView] = useState(false);
+  const imageRef = useRef(null);
+
+  // Intersection Observer for lazy loading
+  useEffect(() => {
+    if (!imageRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // When the image is about to enter the viewport
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect(); // Stop observing once in view
+        }
+      },
+      {
+        rootMargin: "200px 0px", // Start loading when within 200px of viewport
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(imageRef.current);
+
+    return () => {
+      if (observer) observer.disconnect();
+    };
+  }, []);
 
   const handleDeleteClick = () => {
     setShowDeleteConfirm(true);
@@ -93,13 +120,12 @@ export default function ItemCard({
               <>
                 <p className="text-gray-600 mb-4">{getReturnQuestion()}</p>
                 <input
-  type="text"
-  value={returnedTo}
-  onChange={(e) => setReturnedTo(e.target.value)}
-  placeholder="Enter name"
-  className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-base"
-/>
-
+                  type="text"
+                  value={returnedTo}
+                  onChange={(e) => setReturnedTo(e.target.value)}
+                  placeholder="Enter name"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-base"
+                />
               </>
             )}
             
@@ -125,29 +151,40 @@ export default function ItemCard({
       {/* Image Section */}
       {item.image_url && (
         <>
-          <div className="relative w-full aspect-square mb-2">
+          <div className="relative w-full aspect-square mb-2" ref={imageRef}>
             <div className="absolute inset-0">
-              <img
-                src={item.image_url}
-                alt={item.title}
-                className={`w-full h-full object-cover rounded-xl cursor-pointer transition-all duration-700 ease-in-out ${
-                  isLoading
-                    ? "grayscale blur-2xl scale-110"
-                    : "grayscale-0 blur-0 scale-100"
+              {/* Placeholder while loading */}
+              <div 
+                className={`absolute inset-0 bg-gray-200 rounded-xl transition-opacity duration-300 ${
+                  isLoading ? 'opacity-100' : 'opacity-0'
                 }`}
-                onClick={() => onImageClick(item.image_url)}
-                onLoad={() => setLoading(false)}
               />
+              
+              {/* Actual image with lazy loading */}
+              {isInView && (
+                <img
+                  src={item.image_url}
+                  alt={item.title}
+                  className={`w-full h-full object-cover rounded-xl cursor-pointer transition-all duration-700 ease-in-out ${
+                    isLoading
+                      ? "grayscale blur-2xl scale-110"
+                      : "grayscale-0 blur-0 scale-100"
+                  }`}
+                  onClick={() => onImageClick(item.image_url)}
+                  onLoad={() => setLoading(false)}
+                  loading="lazy"
+                />
+              )}
             </div>
           </div>
-          <p className="text-xs text-gray-600 text-center mb-4">
+          <p className="text-xs text-gray-600 text-center mb-4 -mt-2">
             Tap image to see Full Screen
           </p>
         </>
       )}
 
       {/* Title */}
-      <h3 className="border border-gray-300 rounded-2xl text-lg font-semibold text-center text-black inline-block py-2 px-4 bg-gradient-to-r from-blue-100 to-blue-200 shadow-md">
+      <h3 className="-mt-4 border border-gray-300 rounded-2xl text-lg font-semibold text-center text-black inline-block py-2 px-4 bg-gradient-to-r from-blue-100 to-blue-200 shadow-md">
         {item.title}
       </h3>
 
