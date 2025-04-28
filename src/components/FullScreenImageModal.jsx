@@ -24,7 +24,7 @@ export default function FullScreenImageModal({ imageUrl, onClose }) {
             {/* Go Back Text */}
             <button
               onClick={onClose}
-              className="absolute top-4 left-4 text-white text-sm px-3 py-1 bg-black/60 rounded hover:bg-black/80 transition"
+              className="absolute -top-30 left-2 text-white text-2xl px-3 py-1 bg-black/60 rounded-xl hover:bg-black/80 transition"
             >
               x
             </button>
