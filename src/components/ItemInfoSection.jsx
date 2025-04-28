@@ -24,7 +24,7 @@ export default function ItemInfoSection({ item }) {
   };
 
   return (
-    <div className="flex-1 border border-gray-200 rounded-2xl p-4 bg-gray-50 space-y-4 mt-2 flex flex-col justify-between shadow-sm">
+    <div className="flex-1 border border-gray-200 rounded-2xl p-4 bg-gray-50 space-y-4 mt-1 flex flex-col justify-between shadow-sm">
       
       {/* Status Block */}
       <div className="space-y-3">

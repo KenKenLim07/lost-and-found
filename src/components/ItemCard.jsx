@@ -72,7 +72,7 @@ export default function ItemCard({
         onImageClick={onImageClick}
       />
 
-      <h3 className="-mt-1 border border-gray-300 rounded-2xl text-lg font-semibold text-center text-black inline-block py-2 px-4 bg-gradient-to-r from-blue-100 to-blue-200 shadow-md">
+      <h3 className="-mt-1 border border-gray-300 rounded-2xl text-lg font-semibold text-center text-black inline-block py-2 px-4 bg-blue-200 shadow-md">
         {item.title}
       </h3>
 

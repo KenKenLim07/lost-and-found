@@ -1,4 +1,3 @@
-// src/components/AuthForm.jsx
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -9,20 +8,24 @@ export default function AuthForm() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isConfirmationSent, setIsConfirmationSent] = useState(false) // New state for confirmation message
 
   const handleAuth = async (e) => {
     e.preventDefault()
     setError(null)
     setIsLoading(true)
+    setIsConfirmationSent(false) // Reset confirmation message on each attempt
 
     const { error } = isSignUp
       ? await supabase.auth.signUp({ email, password })
       : await supabase.auth.signInWithPassword({ email, password })
 
-    if (error) {
+    if (isSignUp && !error) {
+      setIsConfirmationSent(true) // Show confirmation message if sign-up is successful
+    } else if (error) {
       setError(error.message)
-      setIsLoading(false)
     }
+    setIsLoading(false)
   }
 
   const containerVariants = {
@@ -31,21 +34,17 @@ export default function AuthForm() {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.3
+        delayChildren: 0.2
       }
     }
   }
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { opacity: 0, scale: 0.95 },
     visible: {
-      y: 0,
       opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 24
-      }
+      scale: 1,
+      transition: { type: 'spring', stiffness: 300, damping: 24 }
     }
   }
 
@@ -69,7 +68,10 @@ export default function AuthForm() {
 
         <motion.h2 
           className="text-lg text-gray-600 text-center"
-          variants={itemVariants}
+          key={isSignUp ? 'signup' : 'login'}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
           {isSignUp ? 'Create an account' : 'Welcome back'}
         </motion.h2>
@@ -100,12 +102,24 @@ export default function AuthForm() {
           <AnimatePresence mode="wait">
             {error && (
               <motion.p
+                key="error"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 className="text-red-500 text-sm text-center"
               >
                 {error}
+              </motion.p>
+            )}
+            {isConfirmationSent && (
+              <motion.p
+                key="confirmation"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="text-green-500 text-sm text-center"
+              >
+                A confirmation email has been sent! Please check your inbox.
               </motion.p>
             )}
           </AnimatePresence>
@@ -133,16 +147,28 @@ export default function AuthForm() {
         </form>
 
         <motion.div 
-          className="text-center"
+          className="text-center text-sm text-gray-600"
           variants={itemVariants}
         >
           <button
             onClick={() => setIsSignUp(!isSignUp)}
-            className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+            className="transition-colors"
           >
-            {isSignUp
-              ? 'Already have an account? Log in'
-              : "Don't have an account? Sign up"}
+            {isSignUp ? (
+              <>
+                Already have an account?{' '}
+                <span className="text-blue-600 font-semibold hover:underline">
+                  Log in
+                </span>
+              </>
+            ) : (
+              <>
+                Don't have an account?{' '}
+                <span className="text-blue-600 font-semibold hover:underline">
+                  Sign up
+                </span>
+              </>
+            )}
           </button>
         </motion.div>
       </motion.div>
