@@ -14,14 +14,14 @@ const SearchFilter = ({ search, setSearch, statusFilter, setStatusFilter }) => {
           placeholder="Search items..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-9 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-md 
+          className="w-full pl-9 pr-50 py-2 text-sm bg-gray-50 border border-gray-400 rounded-md 
                    focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500
                    placeholder:text-gray-400 transition-colors duration-200"
         />
       </div>
 
       {/* Status Filter */}
-      <div className="relative w-full sm:w-40">
+      <div className="relative  sm:w-40">
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}

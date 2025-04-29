@@ -1,143 +1,140 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export const FileUpload = ({ 
-  onChange, 
-  accept = "image/*",
-  maxSize = 10, // in MB
-  error 
-}) => {
+export function FileUpload({ onChange, error }) {
+  const [isDragging, setIsDragging] = useState(false);
   const [preview, setPreview] = useState(null);
-  const [dragActive, setDragActive] = useState(false);
-  const inputRef = useRef(null);
+  const fileInputRef = useRef(null);
 
-  const handleDrag = (e) => {
+  const handleDragOver = (e) => {
     e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-
+    setIsDragging(false);
     const file = e.dataTransfer.files[0];
     handleFile(file);
   };
 
-  const handleChange = (e) => {
+  const handleFileInput = (e) => {
     const file = e.target.files[0];
     handleFile(file);
   };
 
   const handleFile = (file) => {
-    if (!file) return;
-
-    // Validate file size
-    if (file.size > maxSize * 1024 * 1024) {
-      alert(`File size must be less than ${maxSize}MB`);
-      return;
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        alert("File size must be less than 10MB");
+        return;
+      }
+      onChange(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
-
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result);
-    };
-    reader.readAsDataURL(file);
-
-    onChange?.(file);
-  };
-
-  const handleButtonClick = () => {
-    inputRef.current?.click();
   };
 
   return (
-    <div className="space-y-1">
+    <div className="w-full">
       <div
         className={`
-          relative border border-dashed rounded p-2
-          ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}
-          ${error ? 'border-red-500' : ''}
+          relative w-full h-20 border-2 border-dashed rounded-md
+          flex flex-col items-center justify-center gap-0.5
+          transition-colors duration-200
+          ${isDragging 
+            ? 'border-blue-400 bg-blue-50' 
+            : error 
+              ? 'border-red-300 bg-red-50' 
+              : 'border-gray-300 bg-gray-50 hover:bg-gray-100'
+          }
+          cursor-pointer
         `}
-        onDragEnter={handleDrag}
-        onDragLeave={handleDrag}
-        onDragOver={handleDrag}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
         onDrop={handleDrop}
+        onClick={() => fileInputRef.current?.click()}
       >
         <input
-          ref={inputRef}
           type="file"
+          ref={fileInputRef}
+          onChange={handleFileInput}
+          accept="image/*"
           className="hidden"
-          accept={accept}
-          onChange={handleChange}
         />
         
-        <div className="text-center">
-          <div className="flex items-center justify-center text-xs text-gray-600">
-            <button
-              type="button"
-              onClick={handleButtonClick}
-              className="relative rounded font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        <AnimatePresence>
+          {preview ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="absolute inset-0 flex items-center justify-center p-1"
             >
-              <span>Upload a file</span>
-            </button>
-            <span className="mx-1">or drag and drop</span>
-            <span className="text-gray-400">PNG, JPG, GIF up to {maxSize}MB</span>
-          </div>
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {preview && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="relative mt-1"
-          >
-            <img
-              src={preview}
-              alt="Preview"
-              className="max-h-24 rounded object-cover mx-auto"
-            />
-            <button
-              type="button"
-              onClick={() => {
-                setPreview(null);
-                onChange?.(null);
-              }}
-              className="absolute top-1 right-1 p-0.5 bg-red-500 text-white rounded-full hover:bg-red-600 focus:outline-none focus:ring-1 focus:ring-red-500"
+              <img
+                src={preview}
+                alt="Preview"
+                className="max-h-full max-w-full object-contain rounded"
+              />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setPreview(null);
+                  onChange(null);
+                }}
+                className="absolute top-1 right-1 p-0.5 bg-white/80 rounded-full shadow-sm hover:bg-white"
+              >
+                <svg className="w-3 h-3 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col items-center justify-center gap-0.5 px-2 text-center"
             >
               <svg
-                className="w-3 h-3"
+                className={`w-5 h-5 ${isDragging ? 'text-blue-500' : 'text-gray-400'}`}
                 fill="none"
-                stroke="currentColor"
                 viewBox="0 0 24 24"
+                stroke="currentColor"
               >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                 />
               </svg>
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
+              <div className="space-y-0.5">
+                <p className="text-[11px] font-medium text-gray-700">
+                  Upload a file
+                </p>
+                <p className="text-[10px] text-gray-500">
+                  or drag and drop
+                </p>
+                <p className="text-[10px] text-gray-400">
+                  PNG, JPG, GIF up to 10MB
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
       {error && (
-        <p className="text-xs text-red-600" role="alert">
-          {error}
-        </p>
+        <p className="mt-0.5 text-[11px] text-red-600 font-medium">{error}</p>
       )}
     </div>
   );
-}; 
+} 

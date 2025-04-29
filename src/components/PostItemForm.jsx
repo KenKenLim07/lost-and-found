@@ -22,21 +22,34 @@ export default function PostItemForm({ user, onItemPosted }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-xl mx-auto px-4 sm:px-0"
+      transition={{ duration: 0.3 }}
+      className="w-full max-w-xl mx-auto px-3 sm:px-0"
     >
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100">
-        <div className="p-3 sm:p-4">
-          <h2 className="text-lg font-medium text-gray-900 mb-3 sm:mb-4">
-            Post a Lost or Found Item
-          </h2>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        {/* Form Header */}
+        <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 border-b border-blue-200">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-blue-100 rounded-lg">
+              <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">Post a Lost or Found Item</h2>
+              <p className="text-xs font-medium text-gray-600">Help reunite items with their owners</p>
+            </div>
+          </div>
+        </div>
 
+        <div className="p-4">
           <AnimatePresence>
             {successMsg && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="mb-3 p-2 bg-green-50 border border-green-100 rounded text-sm"
+                transition={{ duration: 0.2 }}
+                className="mb-3 p-2.5 bg-green-50 border border-green-200 rounded-lg shadow-sm"
               >
                 <div className="flex items-center text-green-700">
                   <svg
@@ -50,7 +63,7 @@ export default function PostItemForm({ user, onItemPosted }) {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="truncate">{successMsg}</span>
+                  <span className="text-xs font-medium">{successMsg}</span>
                 </div>
               </motion.div>
             )}
@@ -60,7 +73,8 @@ export default function PostItemForm({ user, onItemPosted }) {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="mb-3 p-2 bg-red-50 border border-red-100 rounded text-sm"
+                transition={{ duration: 0.2 }}
+                className="mb-3 p-2.5 bg-red-50 border border-red-200 rounded-lg shadow-sm"
               >
                 <div className="flex items-center text-red-700">
                   <svg
@@ -74,7 +88,7 @@ export default function PostItemForm({ user, onItemPosted }) {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="truncate">{errorMsg}</span>
+                  <span className="text-xs font-medium">{errorMsg}</span>
                 </div>
               </motion.div>
             )}
@@ -90,10 +104,11 @@ export default function PostItemForm({ user, onItemPosted }) {
                 required
                 error={errors.title}
                 placeholder="e.g., Black iPhone 13"
+                className="focus:ring-blue-500 focus:border-blue-500"
               />
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Status
                 </label>
                 <StatusSelect
@@ -112,6 +127,7 @@ export default function PostItemForm({ user, onItemPosted }) {
               error={errors.description}
               placeholder="Provide details about the item, where it was last seen, etc."
               rows={3}
+              className="focus:ring-blue-500 focus:border-blue-500"
             />
 
             <FormInput
@@ -124,27 +140,32 @@ export default function PostItemForm({ user, onItemPosted }) {
               placeholder="Email or phone number"
               type="tel"
               inputMode="email"
+              className="focus:ring-blue-500 focus:border-blue-500"
             />
 
-            <div>
+            <div className="w-full">
               <FileUpload
                 onChange={(file) => handleInputChange("imageFile", file)}
                 error={errors.imageFile}
               />
             </div>
 
-            {loading && <ProgressBar progress={uploadProgress} />}
+            {loading && (
+              <div className="pt-1">
+                <ProgressBar progress={uploadProgress} />
+              </div>
+            )}
 
             <button
               type="submit"
               disabled={loading}
               className={`
                 w-full flex justify-center py-2.5 px-4 border border-transparent
-                rounded shadow-sm text-sm font-medium text-white
-                bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2
-                focus:ring-offset-2 focus:ring-blue-500
-                disabled:bg-blue-300 disabled:cursor-not-allowed
-                transition-colors duration-200
+                rounded-lg shadow-sm text-xs font-medium text-white
+                bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                disabled:from-blue-300 disabled:to-blue-400 disabled:cursor-not-allowed
+                transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]
                 touch-manipulation
               `}
             >
@@ -170,10 +191,10 @@ export default function PostItemForm({ user, onItemPosted }) {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Posting...
+                  <span className="font-medium">Posting Item...</span>
                 </div>
               ) : (
-                "Post Item"
+                <span className="font-medium">Post Item</span>
               )}
             </button>
           </form>

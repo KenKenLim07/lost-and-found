@@ -132,11 +132,11 @@ export default function ItemInfoSection({ item }) {
         }`}
       />
       <span
-        className={`text-xs font-semibold ${
+        className={`text-xs font-medium ${
           item.is_returned ? 'text-green-700' : 'text-red-700'
         }`}
       >
-        {item.is_returned ? 'Returned' : 'Not Returned'}
+        {item.is_returned ? 'RETURNED' : 'NOT RETURNED'}
       </span>
     </div>
   </div>
@@ -166,20 +166,35 @@ export default function ItemInfoSection({ item }) {
 </div>
 </div>
 
-      {/* Description */}
+  {/* Description */}
 <div className="-mt-3">
   <div className="flex items-center mb-1.5">
-    <svg className="w-4 h-4 text-amber-500 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    <svg
+      className="w-4 h-4 text-amber-500 mr-1.5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+      />
     </svg>
     <p className="text-xs font-medium text-amber-700">Description:</p>
   </div>
-  <div className="relative">
+
+  <div className="relative mb-2">
+    {/* Chat-style top-left tail */}
+    <div className="absolute -top-2 left-11 w-2 h-2 border-b-8 border-b-amber-300 border-l-8 border-l-transparent"></div>
+
+    {/* Description bubble with fixed dimensions */}
     <div
-      className="mb-auto text-sm text-gray-700 break-words pl-6 rounded-lg p-2 bg-amber-200/50 border border-amber-300/50 max-h-[5em] overflow-y-scroll scrollbar scrollbar-thumb-gray-300 scrollbar-track-transparent scrollbar-thin"
+      className="mt-2 mr-auto text-xs mr-auto mx-[35px] relative text-sm text-gray-800 break-words pl-5 pr-4 py-2 bg-amber-100 border border-amber-300 rounded-xl rounded-bl-none shadow-sm w-[calc(100%-40px)] h-[5.1em] overflow-y-auto scrollbar-thin scrollbar-thumb-amber-400 scrollbar-track-amber-100"
       style={{
         scrollbarWidth: 'thin',
-        scrollbarColor: 'rgb(209 213 219) transparent',
+        scrollbarColor: '#fbbf24 #fef3c7',
       }}
     >
       {item.description}
@@ -187,19 +202,29 @@ export default function ItemInfoSection({ item }) {
   </div>
 </div>
 
+{/* Contact Info */}
+<div className="-mt-4 border border-blue-100 bg-blue-50/50 p-2 rounded-xl">
+  <div className="flex items-center mb-1.5">
+    <svg
+      className="w-4 h-4 text-blue-500 mr-1.5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
+      />
+    </svg>
+    <p className="text-xs font-medium text-blue-700">Contact Information</p>
+  </div>
+  <div className="text-sm text-gray-700 break-words pl-6">
+    {formatContactInfo(item.contact_info)}
+  </div>
+</div>
 
-      {/* Contact Info */}
-      <div className="-mt-3 border border-blue-100 bg-blue-50/50 p-2 rounded-xl">
-        <div className="flex items-center mb-1.5">
-          <svg className="w-4 h-4 text-blue-500 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
-          </svg>
-          <p className="text-xs font-medium text-blue-700">Contact Information</p>
-        </div>
-        <div className="text-sm text-gray-700 break-words pl-6">
-          {formatContactInfo(item.contact_info)}
-        </div>
-      </div>
     </div>
   );
 }
