@@ -42,22 +42,22 @@ export default function PostItemForm({ user, onItemPosted }) {
         const compressedImage = await compressImage(imageFile);
         
         const fileExt = compressedImage.name.split(".").pop();
-        const fileName = `${Date.now()}.${fileExt}`;
-        const { data, error } = await supabase.storage
-          .from("item-images")
+      const fileName = `${Date.now()}.${fileExt}`;
+      const { data, error } = await supabase.storage
+        .from("item-images")
           .upload(fileName, compressedImage);
 
-        if (error) {
-          alert("Image upload failed");
-          console.error(error.message);
-          setLoading(false);
-          return;
-        }
+      if (error) {
+        alert("Image upload failed");
+        console.error(error.message);
+        setLoading(false);
+        return;
+      }
 
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("item-images").getPublicUrl(fileName);
-        imageUrl = publicUrl;
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("item-images").getPublicUrl(fileName);
+      imageUrl = publicUrl;
       } catch (error) {
         console.error("Error processing image:", error);
         alert("Error processing image. Please try again.");

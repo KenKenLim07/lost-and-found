@@ -13,22 +13,22 @@ const ItemList = forwardRef((props, ref) => {
   const [selectedImage, setSelectedImage] = useState(null);
 
   const fetchItems = async () => {
-    setLoading(true);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      setLoading(true);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    if (user) setUserId(user.id);
+      if (user) setUserId(user.id);
 
-    const { data, error } = await supabase
-      .from("items")
-      .select("*")
-      .order("created_at", { ascending: false });
+      const { data, error } = await supabase
+        .from("items")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    if (error) console.error("Error fetching items:", error.message);
-    else setItems(data);
+      if (error) console.error("Error fetching items:", error.message);
+      else setItems(data);
 
-    setLoading(false);
+      setLoading(false);
   };
 
   // Expose the refresh function to parent components

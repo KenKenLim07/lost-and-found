@@ -20,12 +20,12 @@ export default function Navbar({ onSignOut }) {
           >
             About
           </button>
-          <button
-            onClick={onSignOut}
+        <button
+          onClick={onSignOut}
             className="bg-red-700 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
-          >
-            Sign Out
-          </button>
+        >
+          Sign Out
+        </button>
         </div>
 
         {/* Burger Icon (Mobile) */}

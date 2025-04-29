@@ -1,42 +1,58 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { motion, AnimatePresence } from 'framer-motion'
+import { FcGoogle } from 'react-icons/fc' // Google icon (optional)
 
 export default function AuthForm() {
+  // 🔐 Auth-related states
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isSignUp, setIsSignUp] = useState(false)
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [isConfirmationSent, setIsConfirmationSent] = useState(false) // New state for confirmation message
+  const [isConfirmationSent, setIsConfirmationSent] = useState(false)
 
+  // 📥 Handle email/password login or signup
   const handleAuth = async (e) => {
     e.preventDefault()
     setError(null)
     setIsLoading(true)
-    setIsConfirmationSent(false) // Reset confirmation message on each attempt
+    setIsConfirmationSent(false)
 
     const { error } = isSignUp
       ? await supabase.auth.signUp({ email, password })
       : await supabase.auth.signInWithPassword({ email, password })
 
     if (isSignUp && !error) {
-      setIsConfirmationSent(true) // Show confirmation message if sign-up is successful
+      setIsConfirmationSent(true)
     } else if (error) {
       setError(error.message)
     }
+
     setIsLoading(false)
   }
 
+  // 🟢 Handle Google OAuth login
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+    })
+
+    if (error) {
+      setError(error.message)
+    }
+  }
+
+  // ✨ Animation configs
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
+        delayChildren: 0.2,
+      },
+    },
   }
 
   const itemVariants = {
@@ -44,29 +60,32 @@ export default function AuthForm() {
     visible: {
       opacity: 1,
       scale: 1,
-      transition: { type: 'spring', stiffness: 300, damping: 24 }
-    }
+      transition: { type: 'spring', stiffness: 300, damping: 24 },
+    },
   }
 
   return (
-    <motion.div 
+    <motion.div
       className="w-full max-w-sm mx-auto p-6"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
-      <motion.div 
+      {/* 🔲 Auth card container */}
+      <motion.div
         className="bg-white rounded-2xl shadow-xl p-8 space-y-6"
         variants={itemVariants}
       >
-        <motion.h1 
+        {/* 🧢 App title */}
+        <motion.h1
           className="text-2xl font-bold text-center text-blue-600"
           variants={itemVariants}
         >
           Lost & Found
         </motion.h1>
 
-        <motion.h2 
+        {/* 🪪 Login or signup prompt */}
+        <motion.h2
           className="text-lg text-gray-600 text-center"
           key={isSignUp ? 'signup' : 'login'}
           initial={{ opacity: 0, y: -10 }}
@@ -76,6 +95,7 @@ export default function AuthForm() {
           {isSignUp ? 'Create an account' : 'Welcome back'}
         </motion.h2>
 
+        {/* 📧 Email/Password Form */}
         <form onSubmit={handleAuth} className="space-y-4">
           <motion.div variants={itemVariants}>
             <input
@@ -99,6 +119,7 @@ export default function AuthForm() {
             />
           </motion.div>
 
+          {/* 🧨 Error or confirmation messages */}
           <AnimatePresence mode="wait">
             {error && (
               <motion.p
@@ -124,29 +145,38 @@ export default function AuthForm() {
             )}
           </AnimatePresence>
 
+          {/* 🔘 Main auth button */}
           <motion.button
-            variants={itemVariants}
-            className={`w-full py-3 rounded-xl text-white font-medium transition-all ${
-              isLoading 
-                ? 'bg-gray-400 cursor-not-allowed' 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className={`w-full py-3 rounded-xl text-white font-medium ${
+              isLoading
+                ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-700'
             }`}
             type="submit"
             disabled={isLoading}
           >
-            {isLoading ? (
-              <motion.span
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-              />
-            ) : (
-              isSignUp ? 'Sign Up' : 'Log In'
-            )}
+            {isLoading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Log In'}
+          </motion.button>
+
+          {/* 🟩 Google login button */}
+          <motion.button
+            onClick={handleGoogleLogin}
+            type="button"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="w-full py-3 flex items-center justify-center gap-2 mt-2 rounded-xl bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-medium"
+          >
+            <FcGoogle size={20} />
+            Continue with Google
           </motion.button>
         </form>
 
-        <motion.div 
+        {/* 🔁 Toggle login/signup */}
+        <motion.div
           className="text-center text-sm text-gray-600"
           variants={itemVariants}
         >
