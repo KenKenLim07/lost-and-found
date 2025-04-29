@@ -1,184 +1,181 @@
-import { useState } from "react";
-import { supabase } from "../lib/supabase";
-import { motion } from "framer-motion";
-import imageCompression from "browser-image-compression";
+import { motion, AnimatePresence } from "framer-motion";
+import { useItemForm } from "../hooks/useItemForm";
+import { ProgressBar } from "./forms/ProgressBar";
+import { StatusSelect } from "./forms/StatusSelect";
+import { FormInput } from "./forms/FormInput";
+import { FormTextarea } from "./forms/FormTextarea";
+import { FileUpload } from "./forms/FileUpload";
 
 export default function PostItemForm({ user, onItemPosted }) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("lost");
-  const [contactInfo, setContactInfo] = useState("");
-  const [imageFile, setImageFile] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
-
-  // Compress image before upload
-  const compressImage = async (file) => {
-    const options = {
-      maxSizeMB: 0.5, // Compress to 500KB max
-      maxWidthOrHeight: 1200, // Limit dimensions
-      useWebWorker: true, // Use web worker for better performance
-    };
-
-    try {
-      const compressedFile = await imageCompression(file, options);
-      console.log("Original size:", file.size / 1024 / 1024, "MB");
-      console.log("Compressed size:", compressedFile.size / 1024 / 1024, "MB");
-      return compressedFile;
-    } catch (error) {
-      console.error("Error compressing image:", error);
-      return file; // Return original file if compression fails
-    }
-  };
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setLoading(true);
-
-    let imageUrl = "";
-    if (imageFile) {
-      try {
-        // Compress the image before uploading
-        const compressedImage = await compressImage(imageFile);
-        
-        const fileExt = compressedImage.name.split(".").pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      const { data, error } = await supabase.storage
-        .from("item-images")
-          .upload(fileName, compressedImage);
-
-      if (error) {
-        alert("Image upload failed");
-        console.error(error.message);
-        setLoading(false);
-        return;
-      }
-
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("item-images").getPublicUrl(fileName);
-      imageUrl = publicUrl;
-      } catch (error) {
-        console.error("Error processing image:", error);
-        alert("Error processing image. Please try again.");
-        setLoading(false);
-        return;
-      }
-    }
-
-    const { error: insertError } = await supabase.from("items").insert([
-      {
-        title,
-        description,
-        status,
-        contact_info: contactInfo,
-        image_url: imageUrl,
-        created_at: new Date().toISOString(),
-        user_id: user.id,
-      },
-    ]);
-
-    if (insertError) {
-      alert("Failed to post item");
-      console.error(insertError.message);
-    } else {
-      setTitle("");
-      setDescription("");
-      setStatus("lost");
-      setContactInfo("");
-      setImageFile(null);
-      setSuccessMsg("Item posted successfully!");
-      setTimeout(() => setSuccessMsg(""), 3000);
-      
-      // Call the refresh function after successful upload
-      if (onItemPosted) {
-        onItemPosted();
-      }
-    }
-
-    setLoading(false);
-  }
+  const {
+    formData,
+    loading,
+    successMsg,
+    errorMsg,
+    uploadProgress,
+    handleInputChange,
+    handleSubmit,
+    errors,
+  } = useItemForm(user, onItemPosted);
 
   return (
-    <motion.form
-      onSubmit={handleSubmit}
-      className="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow-md space-y-4"
-      initial={{ opacity: 0, y: 10 }}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      className="max-w-xl mx-auto"
     >
-      <h2 className="text-xl font-semibold">Post a Lost or Found Item</h2>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-100">
+        <div className="p-4">
+          <h2 className="text-lg font-medium text-gray-900 mb-4">
+            Post a Lost or Found Item
+          </h2>
 
-      {successMsg && (
-        <motion.div
-          className="bg-green-100 text-green-700 px-4 py-2 rounded-md text-sm"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          {successMsg}
-        </motion.div>
-      )}
+          <AnimatePresence>
+            {successMsg && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mb-3 p-2 bg-green-50 border border-green-100 rounded text-sm"
+              >
+                <div className="flex items-center text-green-700">
+                  <svg
+                    className="h-4 w-4 mr-2"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  {successMsg}
+                </div>
+              </motion.div>
+            )}
 
-      <input
-        type="text"
-        placeholder="Item Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="w-full p-2 border rounded-md"
-        required
-      />
+            {errorMsg && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mb-3 p-2 bg-red-50 border border-red-100 rounded text-sm"
+              >
+                <div className="flex items-center text-red-700">
+                  <svg
+                    className="h-4 w-4 mr-2"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  {errorMsg}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-      <textarea
-        placeholder="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        className="w-full p-2 border rounded-md"
-        rows={4}
-      />
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <FormInput
+                id="title"
+                label="Item Title"
+                value={formData.title}
+                onChange={(e) => handleInputChange("title", e.target.value)}
+                required
+                error={errors.title}
+                placeholder="e.g., Black iPhone 13"
+              />
 
-      <div className="relative">
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="w-full appearance-none p-2 pr-10 border rounded-md"
-        >
-          <option value="lost">Lost</option>
-          <option value="found">Found</option>
-        </select>
-        <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-600">
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status
+                </label>
+                <StatusSelect
+                  value={formData.status}
+                  onChange={(value) => handleInputChange("status", value)}
+                />
+              </div>
+            </div>
+
+            <FormTextarea
+              id="description"
+              label="Description"
+              value={formData.description}
+              onChange={(e) => handleInputChange("description", e.target.value)}
+              required
+              error={errors.description}
+              placeholder="Provide details about the item, where it was last seen, etc."
+              rows={3}
+            />
+
+            <FormInput
+              id="contactInfo"
+              label="Contact Information"
+              value={formData.contactInfo}
+              onChange={(e) => handleInputChange("contactInfo", e.target.value)}
+              required
+              error={errors.contactInfo}
+              placeholder="Email or phone number"
+            />
+
+            <div>
+              <FileUpload
+                onChange={(file) => handleInputChange("imageFile", file)}
+                error={errors.imageFile}
+              />
+            </div>
+
+            {loading && <ProgressBar progress={uploadProgress} />}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className={`
+                w-full flex justify-center py-2 px-4 border border-transparent
+                rounded shadow-sm text-sm font-medium text-white
+                bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2
+                focus:ring-offset-2 focus:ring-blue-500
+                disabled:bg-blue-300 disabled:cursor-not-allowed
+                transition-colors duration-200
+              `}
+            >
+              {loading ? (
+                <div className="flex items-center">
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Posting...
+                </div>
+              ) : (
+                "Post Item"
+              )}
+            </button>
+          </form>
         </div>
       </div>
-
-      <input
-        type="text"
-        placeholder="Contact Info (email or phone)"
-        value={contactInfo}
-        onChange={(e) => setContactInfo(e.target.value)}
-        className="w-full p-2 border rounded-md"
-      />
-
-      <input
-        type="file"
-        onChange={(e) => setImageFile(e.target.files[0])}
-        accept="image/*"
-        className="w-full"
-      />
-
-      <button
-        type="submit"
-        className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
-        disabled={loading}
-      >
-        {loading ? "Posting..." : "Post Item"}
-      </button>
-    </motion.form>
+    </motion.div>
   );
 }
