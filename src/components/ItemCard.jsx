@@ -1,18 +1,9 @@
-import { useState, Suspense, lazy } from "react";
+import { useState } from "react";
 import ItemImage from './ItemImage';
 import ItemInfoSection from './ItemInfoSection';
 import ItemOwnerActions from './ItemOwnerActions';
-
-// Lazy load the modals
-const DeleteConfirmModal = lazy(() => import('./DeleteConfirmModal'));
-const ReturnConfirmModal = lazy(() => import('./ReturnConfirmModal'));
-
-// Loading fallback for modals
-const ModalLoadingFallback = () => (
-  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-  </div>
-);
+import DeleteConfirmModal from './DeleteConfirmModal';
+import ReturnConfirmModal from './ReturnConfirmModal';
 
 export default function ItemCard({
   item,
@@ -29,8 +20,14 @@ export default function ItemCard({
     setShowDeleteConfirm(true);
   };
 
-  const handleConfirmDelete = () => {
-    onDelete(item.id);
+  const handleConfirmDelete = async () => {
+    try {
+      await onDelete(item.id);
+      // Lazy load the modal after successful deletion
+      import('./DeleteConfirmModal');
+    } catch (error) {
+      console.error('Delete operation failed:', error);
+    }
     setShowDeleteConfirm(false);
   };
 
@@ -38,11 +35,17 @@ export default function ItemCard({
     setShowReturnConfirm(true);
   };
 
-  const handleConfirmReturn = () => {
-    if (item.is_returned) {
-      onToggleReturned(item.id, item.is_returned);
-    } else {
-      onToggleReturned(item.id, item.is_returned, returnedTo);
+  const handleConfirmReturn = async () => {
+    try {
+      if (item.is_returned) {
+        await onToggleReturned(item.id, item.is_returned);
+      } else {
+        await onToggleReturned(item.id, item.is_returned, returnedTo);
+      }
+      // Lazy load the modal after successful return operation
+      import('./ReturnConfirmModal');
+    } catch (error) {
+      console.error('Return operation failed:', error);
     }
     setShowReturnConfirm(false);
     setReturnedTo("");
@@ -76,29 +79,25 @@ export default function ItemCard({
         />
       )}
 
-      {/* Modals with Suspense */}
+      {/* Modals */}
       {showDeleteConfirm && (
-        <Suspense fallback={<ModalLoadingFallback />}>
-          <DeleteConfirmModal
-            isOpen={showDeleteConfirm}
-            onClose={() => setShowDeleteConfirm(false)}
-            onConfirm={handleConfirmDelete}
-          />
-        </Suspense>
+        <DeleteConfirmModal
+          isOpen={showDeleteConfirm}
+          onClose={() => setShowDeleteConfirm(false)}
+          onConfirm={handleConfirmDelete}
+        />
       )}
 
       {showReturnConfirm && (
-        <Suspense fallback={<ModalLoadingFallback />}>
-          <ReturnConfirmModal
-            isOpen={showReturnConfirm}
-            onClose={() => setShowReturnConfirm(false)}
-            onConfirm={handleConfirmReturn}
-            question={getReturnQuestion()}
-            returnedTo={returnedTo}
-            onReturnedToChange={setReturnedTo}
-            isReturned={item.is_returned}
-          />
-        </Suspense>
+        <ReturnConfirmModal
+          isOpen={showReturnConfirm}
+          onClose={() => setShowReturnConfirm(false)}
+          onConfirm={handleConfirmReturn}
+          question={getReturnQuestion()}
+          returnedTo={returnedTo}
+          onReturnedToChange={setReturnedTo}
+          isReturned={item.is_returned}
+        />
       )}
     </div>
   );
