@@ -5,7 +5,7 @@ export default function ReturnConfirmModal({
   isReturned,
   returnedTo,
   onReturnedToChange,
-  returnQuestion 
+  question
 }) {
   if (!isOpen) return null;
 
@@ -20,7 +20,7 @@ export default function ReturnConfirmModal({
           <p className="text-gray-600 mb-6">Unmark as returned?</p>
         ) : (
           <>
-            <p className="text-gray-600 mb-4">{returnQuestion}</p>
+            <p className="text-gray-600 mb-4">{question}</p>
             <input
               type="text"
               value={returnedTo}

@@ -95,7 +95,7 @@ export default function ItemCard({
             onConfirm={handleConfirmReturn}
             question={getReturnQuestion()}
             returnedTo={returnedTo}
-            setReturnedTo={setReturnedTo}
+            onReturnedToChange={setReturnedTo}
             isReturned={item.is_returned}
           />
         </Suspense>
