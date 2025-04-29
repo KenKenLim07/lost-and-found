@@ -22,11 +22,11 @@ export default function PostItemForm({ user, onItemPosted }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-xl mx-auto"
+      className="w-full max-w-xl mx-auto px-4 sm:px-0"
     >
       <div className="bg-white rounded-lg shadow-sm border border-gray-100">
-        <div className="p-4">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">
+        <div className="p-3 sm:p-4">
+          <h2 className="text-lg font-medium text-gray-900 mb-3 sm:mb-4">
             Post a Lost or Found Item
           </h2>
 
@@ -40,7 +40,7 @@ export default function PostItemForm({ user, onItemPosted }) {
               >
                 <div className="flex items-center text-green-700">
                   <svg
-                    className="h-4 w-4 mr-2"
+                    className="h-4 w-4 mr-2 flex-shrink-0"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -50,7 +50,7 @@ export default function PostItemForm({ user, onItemPosted }) {
                       clipRule="evenodd"
                     />
                   </svg>
-                  {successMsg}
+                  <span className="truncate">{successMsg}</span>
                 </div>
               </motion.div>
             )}
@@ -64,7 +64,7 @@ export default function PostItemForm({ user, onItemPosted }) {
               >
                 <div className="flex items-center text-red-700">
                   <svg
-                    className="h-4 w-4 mr-2"
+                    className="h-4 w-4 mr-2 flex-shrink-0"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -74,14 +74,14 @@ export default function PostItemForm({ user, onItemPosted }) {
                       clipRule="evenodd"
                     />
                   </svg>
-                  {errorMsg}
+                  <span className="truncate">{errorMsg}</span>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
 
           <form onSubmit={handleSubmit} className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <FormInput
                 id="title"
                 label="Item Title"
@@ -122,6 +122,8 @@ export default function PostItemForm({ user, onItemPosted }) {
               required
               error={errors.contactInfo}
               placeholder="Email or phone number"
+              type="tel"
+              inputMode="email"
             />
 
             <div>
@@ -137,12 +139,13 @@ export default function PostItemForm({ user, onItemPosted }) {
               type="submit"
               disabled={loading}
               className={`
-                w-full flex justify-center py-2 px-4 border border-transparent
+                w-full flex justify-center py-2.5 px-4 border border-transparent
                 rounded shadow-sm text-sm font-medium text-white
                 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2
                 focus:ring-offset-2 focus:ring-blue-500
                 disabled:bg-blue-300 disabled:cursor-not-allowed
                 transition-colors duration-200
+                touch-manipulation
               `}
             >
               {loading ? (

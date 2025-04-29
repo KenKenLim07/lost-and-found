@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export const FileUpload = ({ 
   onChange, 
   accept = "image/*",
-  maxSize = 5, // in MB
+  maxSize = 10, // in MB
   error 
 }) => {
   const [preview, setPreview] = useState(null);
