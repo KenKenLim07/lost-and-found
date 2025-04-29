@@ -27,7 +27,7 @@ function App() {
     <div className="min-h-screen bg-white">
       <NavBar onSignOut={handleSignOut} />
 
-      <div className="p-6">
+      <div className="p-2">
         <PostItemForm user={user} onItemPosted={() => itemListRef.current?.refresh()} />
         <ItemList ref={itemListRef} />
       </div>

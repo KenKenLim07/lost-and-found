@@ -95,140 +95,98 @@ export default function ItemInfoSection({ item }) {
   return (
     <div className="flex-1 border border-gray-200 rounded-2xl p-4 bg-gray-50 space-y-4 mt-1 flex flex-col justify-between shadow-sm">
       
-      {/* Status Block */}
-      <div className="border border-gray-100 bg-gray-50/50 p-2 rounded-xl">
-        <div className="flex items-center mb-1.5">
-          <svg className="w-4 h-4 text-gray-500 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+    {/* Status Block */}
+<div className="border border-gray-200 bg-gray-50/60 p-4 rounded-2xl space-y-4 shadow-sm">
+  {/* Section Header */}
+  <div className="flex items-center gap-2">
+    <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+    </svg>
+    <h4 className="text-sm- font-semibold text-gray-800">Item Status</h4>
+  </div>
+
+  {/* Initial Status + Posted */}
+  <div className="flex justify-between items-start">
+    <div>
+      <p className="text-xs text-gray-500 mb-1">Initial Status</p>
+      <StatusBadge status={item.status} isReturned={false} />
+    </div>
+    <div className="text-right">
+      <InfoRow 
+        label="Posted"
+        value={formatDate(item.created_at)}
+        icon={<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />}
+      />
+    </div>
+  </div>
+
+  <hr className="border-t border-gray-200" />
+{/* Current Status */}
+<div className="flex justify-between items-start mt-2">
+  <div>
+    <p className="text-xs text-gray-500 mb-1">Current Status</p>
+    <div className="inline-flex items-center gap-1">
+      <span
+        className={`h-2 w-2 rounded-full ${
+          item.is_returned ? 'bg-green-500' : 'bg-red-500'
+        }`}
+      />
+      <span
+        className={`text-xs font-semibold ${
+          item.is_returned ? 'text-green-700' : 'text-red-700'
+        }`}
+      >
+        {item.is_returned ? 'Returned' : 'Not Returned'}
+      </span>
+    </div>
+  </div>
+
+  <div className="text-right text-xs space-y-0.5">
+    {item.is_returned ? (
+      <>
+        <div className="flex items-center justify-end gap-1 text-gray-700">
+          <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
-          <p className="text-xs font-medium text-gray-700">Item Status</p>
+          <span className="font-medium">Returned to:</span>
+          <span>{item.returned_to}</span>
         </div>
-        
-        <div className="space-y-2">
-          {/* Status + Posted Date */}
-          <div className="flex justify-between items-center">
-            <div className="pl-4">
-              <StatusBadge status={item.status} isReturned={false} />
-            </div>
-
-            <div className="flex flex-col items-end">
-              <InfoRow 
-                label="Posted"
-                value={formatDate(item.created_at)}
-                icon={<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />}
-              />
-            </div>
-          </div>
-
-          {/* Current Status Label */}
-          <div className="pl">
-            <div className="flex items-center text-xs text-gray-500 mb-0.5">
-              <svg className="w-4 h-4 text-gray-500 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p className="text-xs font-medium text-gray-700">Current Status</p>
-            </div>
-          </div>
-
-          {/* Returned Status */}
-          <div className="flex justify-between items-start">
-            <div className="pl-4">
-              <StatusBadge status={item.status} isReturned={item.is_returned} />
-            </div>
-
-            <div className="flex flex-col items-end space-y-0.5">
-              {item.is_returned ? (
-                <>
-                  <InfoRow 
-                    label="Returned to"
-                    value={item.returned_to}
-                    icon={<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />}
-                  />
-                  <InfoRow 
-                    label="Date"
-                    value={formatDate(item.date_returned)}
-                    icon={<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />}
-                  />
-                </>
-              ) : (
-                <div className="text-xs text-gray-500">Not yet returned</div>
-              )}
-            </div>
-          </div>
+        <div className="flex items-center justify-end gap-1 text-gray-700">
+          <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span className="font-medium">Date:</span>
+          <span>{formatDate(item.date_returned)}</span>
         </div>
-      </div>
+      </>
+    ) : (
+      <div className="italic text-gray-500">Not yet returned</div>
+    )}
+  </div>
+</div>
+</div>
 
       {/* Description */}
-      <div className="-mt-3 border border-amber-100 bg-amber-50/50 p-2 rounded-xl">
-        <div className="flex items-center mb-1.5">
-          <svg className="w-4 h-4 text-amber-500 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          <p className="text-xs font-medium text-amber-700">Description</p>
-        </div>
-        <div 
-          className="relative"
-          onClick={() => item.description.length > 100 && setIsDescriptionModalOpen(true)}
-        >
-          <div
-            className="text-sm text-gray-700 break-words pl-6 rounded-lg p-2 bg-white/50 cursor-pointer active:bg-white/70 transition-colors border border-amber-100/50"
-            style={{
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              lineHeight: '1.1em',
-              maxHeight: '3em',
-            }}
-          >
-            {item.description}
-          </div>
-          {item.description.length > 100 && (
-            <>
-              <div className="absolute bottom-0 right-0 pl-8 bg-gradient-to-l from-white/50 to-transparent">
-                <svg className="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-              <div className="text-xs text-gray-400 mt-1 ml-6">View full description</div>
-            </>
-          )}
-        </div>
-      </div>
+<div className="-mt-3">
+  <div className="flex items-center mb-1.5">
+    <svg className="w-4 h-4 text-amber-500 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+    <p className="text-xs font-medium text-amber-700">Description:</p>
+  </div>
+  <div className="relative">
+    <div
+      className="mb-auto text-sm text-gray-700 break-words pl-6 rounded-lg p-2 bg-amber-200/50 border border-amber-300/50 max-h-[5em] overflow-y-scroll scrollbar scrollbar-thumb-gray-300 scrollbar-track-transparent scrollbar-thin"
+      style={{
+        scrollbarWidth: 'thin',
+        scrollbarColor: 'rgb(209 213 219) transparent',
+      }}
+    >
+      {item.description}
+    </div>
+  </div>
+</div>
 
-      {/* Description Modal */}
-      {isDescriptionModalOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center p-4"
-          onClick={() => setIsDescriptionModalOpen(false)}
-        >
-          <div 
-            className="bg-white rounded-2xl p-4 w-full max-w-lg max-h-[70vh] overflow-y-auto animate-slide-up shadow-lg"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-3 sticky top-0 bg-white rounded-t-xl">
-              <div className="flex items-center">
-                <svg className="w-4 h-4 text-amber-500 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <p className="text-sm font-medium text-gray-700">Description</p>
-              </div>
-              <button 
-                onClick={() => setIsDescriptionModalOpen(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap break-words px-1">
-              {item.description}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Contact Info */}
       <div className="-mt-3 border border-blue-100 bg-blue-50/50 p-2 rounded-xl">
