@@ -1,9 +1,18 @@
-import { useState } from "react";
+import { useState, Suspense, lazy } from "react";
 import ItemImage from './ItemImage';
 import ItemInfoSection from './ItemInfoSection';
 import ItemOwnerActions from './ItemOwnerActions';
-import DeleteConfirmModal from './DeleteConfirmModal';
-import ReturnConfirmModal from './ReturnConfirmModal';
+
+// Lazy load the modals
+const DeleteConfirmModal = lazy(() => import('./DeleteConfirmModal'));
+const ReturnConfirmModal = lazy(() => import('./ReturnConfirmModal'));
+
+// Loading fallback for modals
+const ModalLoadingFallback = () => (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+  </div>
+);
 
 export default function ItemCard({
   item,
@@ -47,25 +56,6 @@ export default function ItemCard({
 
   return (
     <div className="bg-white p-4 rounded-2xl shadow-md hover:shadow-lg transition-all duration-500 ease-in-out animate-fadeIn flex flex-col h-full relative">
-      <DeleteConfirmModal
-        isOpen={showDeleteConfirm}
-        onClose={() => setShowDeleteConfirm(false)}
-        onConfirm={handleConfirmDelete}
-      />
-
-      <ReturnConfirmModal
-        isOpen={showReturnConfirm}
-        onClose={() => {
-          setShowReturnConfirm(false);
-          setReturnedTo("");
-        }}
-        onConfirm={handleConfirmReturn}
-        isReturned={item.is_returned}
-        returnedTo={returnedTo}
-        onReturnedToChange={setReturnedTo}
-        returnQuestion={getReturnQuestion()}
-      />
-      
       <ItemImage
         imageUrl={item.image_url}
         title={item.title}
@@ -84,6 +74,31 @@ export default function ItemCard({
           onReturnClick={handleReturnClick}
           onDeleteClick={handleDeleteClick}
         />
+      )}
+
+      {/* Modals with Suspense */}
+      {showDeleteConfirm && (
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <DeleteConfirmModal
+            isOpen={showDeleteConfirm}
+            onClose={() => setShowDeleteConfirm(false)}
+            onConfirm={handleConfirmDelete}
+          />
+        </Suspense>
+      )}
+
+      {showReturnConfirm && (
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <ReturnConfirmModal
+            isOpen={showReturnConfirm}
+            onClose={() => setShowReturnConfirm(false)}
+            onConfirm={handleConfirmReturn}
+            question={getReturnQuestion()}
+            returnedTo={returnedTo}
+            setReturnedTo={setReturnedTo}
+            isReturned={item.is_returned}
+          />
+        </Suspense>
       )}
     </div>
   );

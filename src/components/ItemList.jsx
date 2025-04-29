@@ -1,8 +1,18 @@
 import { useEffect, useState, useImperativeHandle, forwardRef } from "react";
 import { supabase } from "../lib/supabase";
 import ItemCard from "./ItemCard";
-import FullScreenImageModal from "./FullScreenImageModal";
 import SearchFilter from "./SearchFilter";
+import { Suspense, lazy } from "react";
+
+// Lazy load the modal
+const FullScreenImageModal = lazy(() => import("./FullScreenImageModal"));
+
+// Loading fallback for the modal
+const ModalLoadingFallback = () => (
+  <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+  </div>
+);
 
 const ItemList = forwardRef((props, ref) => {
   const [items, setItems] = useState([]);
@@ -154,11 +164,15 @@ const ItemList = forwardRef((props, ref) => {
         )}
       </div>
 
-      {/* Fullscreen Image Modal */}
-      <FullScreenImageModal
-        imageUrl={selectedImage}
-        onClose={() => setSelectedImage(null)}
-      />
+      {/* Fullscreen Image Modal with Suspense */}
+      {selectedImage && (
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <FullScreenImageModal
+            imageUrl={selectedImage}
+            onClose={() => setSelectedImage(null)}
+          />
+        </Suspense>
+      )}
     </div>
   );
 });

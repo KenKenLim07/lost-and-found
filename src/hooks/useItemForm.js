@@ -20,8 +20,8 @@ const validateForm = (formData) => {
     errors.contactInfo = "Please enter a valid email or phone number";
   }
 
-  if (formData.imageFile && formData.imageFile.size > 5 * 1024 * 1024) {
-    errors.imageFile = "Image size must be less than 5MB";
+  if (formData.imageFile && formData.imageFile.size > 10 * 1024 * 1024) {
+    errors.imageFile = "Image size must be less than 10MB";
   }
 
   return errors;

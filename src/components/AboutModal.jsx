@@ -8,57 +8,47 @@ export default function AboutModal({ isOpen, onClose }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
           onClick={onClose}
         >
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-8"
+            exit={{ scale: 0.95, opacity: 0 }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+            className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 sm:p-7"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-start mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">About Lost & Found</h2>
+            <div className="flex items-start justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">
+                About This App
+              </h2>
               <button
                 onClick={onClose}
-                className="text-gray-500 hover:text-gray-700 transition-colors"
+                className="text-gray-500 hover:text-gray-700 transition"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            
-            <div className="space-y-4 text-gray-600">
+
+            <div className="text-sm text-gray-600 space-y-4">
               <p>
-                Lost & Found is a community-driven platform designed to help people recover their lost items and connect with those who have found them. Our mission is to make the process of returning lost items as simple and efficient as possible.
+                Hello! I'm Jose Marie Lim, a Computer Science student at Guimaras State University. I built this simple Lost & Found web app using React, Vite, Tailwind CSS, Framer Motion, and Supabase for the backend.
               </p>
-              
               <p>
-                Founded in 2023, our platform has helped thousands of people reunite with their belongings. We believe that by leveraging technology and community, we can create a more connected world where lost items find their way back home.
+                Initially, this was just a portfolio project — but then I thought, maybe it could actually help us here at the Mosqueda campus. If you ever lose or find something, you can post it here.
               </p>
-              
               <p>
-                Our platform features real-time updates, image recognition technology, and a user-friendly interface to ensure the best possible experience for both those who have lost items and those who have found them.
+                Just putting it out there — maybe it’ll come in handy. Thank you!
               </p>
-              
-              <div className="pt-4 border-t border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Our Values</h3>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>Community-driven approach</li>
-                  <li>Privacy and security</li>
-                  <li>Ease of use</li>
-                  <li>Transparency</li>
-                </ul>
-              </div>
             </div>
-            
-            <div className="mt-8 flex justify-end">
+
+            <div className="mt-6 flex justify-end">
               <button
                 onClick={onClose}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition"
               >
                 Close
               </button>
@@ -68,4 +58,4 @@ export default function AboutModal({ isOpen, onClose }) {
       )}
     </AnimatePresence>
   );
-} 
+}

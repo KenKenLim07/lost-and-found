@@ -1,7 +1,16 @@
-import { useState } from "react";
+import { useState, Suspense, lazy } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { burgerTop, burgerMiddle, burgerBottom } from "../animations/variants";
-import AboutModal from "./AboutModal";
+
+// Lazy load the AboutModal
+const AboutModal = lazy(() => import("./AboutModal"));
+
+// Loading fallback for the modal
+const ModalLoadingFallback = () => (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+  </div>
+);
 
 export default function Navbar({ onSignOut }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -100,8 +109,15 @@ export default function Navbar({ onSignOut }) {
         </AnimatePresence>
       </div>
 
-      {/* About Modal */}
-      <AboutModal isOpen={showAbout} onClose={() => setShowAbout(false)} />
+      {/* About Modal with Suspense */}
+      {showAbout && (
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <AboutModal
+            isOpen={showAbout}
+            onClose={() => setShowAbout(false)}
+          />
+        </Suspense>
+      )}
     </header>
   );
 }
