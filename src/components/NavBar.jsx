@@ -82,7 +82,7 @@ export default function Navbar({ onSignOut }) {
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.4 }}
               className="absolute top-full right-6 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-40 overflow-hidden"
             >
               <button
