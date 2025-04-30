@@ -4,13 +4,31 @@ import { fadeScale } from "../animations/variants";
 import { X } from "lucide-react"; // optional: install lucide-react for elegant icons
 
 export default function FullScreenImageModal({ imageUrl, onClose }) {
-  // Escape key closes modal
+  // Close modal on backdrop click
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  // Escape key closes modal (fallback for desktop users)
   useEffect(() => {
+    // Prevent background scrolling
     const handleKeyDown = (e) => {
       if (e.key === "Escape") onClose();
     };
+
+    // Add event listener to close modal on Escape key press
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+
+    // Prevent scrolling when modal is open
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      // Remove event listener and reset overflow on cleanup
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = ""; // Reset scrolling when modal is closed
+    };
   }, [onClose]);
 
   return (
@@ -24,6 +42,7 @@ export default function FullScreenImageModal({ imageUrl, onClose }) {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
           aria-modal="true"
           role="dialog"
+          onClick={handleBackdropClick} // Allow backdrop click to close
         >
           <motion.div
             variants={fadeScale}
@@ -39,10 +58,12 @@ export default function FullScreenImageModal({ imageUrl, onClose }) {
             <button
               onClick={onClose}
               aria-label="Close full screen image"
-              className="absolute top-4 right-4 text-white bg-black/60 hover:bg-black/80 transition-colors p-2 rounded-full shadow-md focus:outline-none focus:ring-2 focus:ring-white"
+              className="absolute top-4 right-4 text-white bg-black/60 hover:bg-black/80 transition-colors p-2 rounded-full shadow-md focus:outline-none focus:ring-2 focus:ring-white sm:top-2 sm:right-2"
             >
               <X className="w-6 h-6" />
             </button>
+
+
           </motion.div>
         </motion.div>
       )}

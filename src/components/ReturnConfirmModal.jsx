@@ -16,9 +16,19 @@ export default function ReturnConfirmModal({
     const handleKeyDown = (e) => {
       if (e.key === "Escape") onClose();
     };
+
+    if (isOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   const handleBackdropClick = (e) => {
     if (e.target === backdropRef.current) onClose();
@@ -29,51 +39,51 @@ export default function ReturnConfirmModal({
       {isOpen && (
         <motion.div
           ref={backdropRef}
-          className="inset-0 fixed bg-black/40 flex items-end justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/40 z-50 flex items-end justify-center p-2 sm:p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={handleBackdropClick}
         >
           <motion.div
-            className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl"
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 50, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="bg-white rounded-xl w-full max-w-sm shadow-xl p-4 sm:p-6 border border-gray-300"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 30 }}
+            transition={{ type: "spring", stiffness: 300, damping: 24 }}
           >
-            <h3 className="text-lg font-semibold mb-4 text-gray-800">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
               {isReturned ? "Unmark as Returned" : "Mark as Returned"}
             </h3>
 
             {isReturned ? (
-              <p className="text-gray-600 mb-6">
+              <p className="text-sm text-gray-600 mb-4">
                 Are you sure you want to unmark this item as returned?
               </p>
             ) : (
               <>
-                <p className="text-gray-600 mb-3">{question}</p>
+                <p className="text-sm text-gray-600 mb-2">{question}</p>
                 <input
                   type="text"
                   value={returnedTo}
                   onChange={(e) => onReturnedToChange(e.target.value)}
-                  placeholder="Enter recipient's name"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Enter name"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-4"
                 />
               </>
             )}
 
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-2">
               <button
                 onClick={onClose}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+                className="w-full sm:w-auto px-4 py-2 text-sm bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={onConfirm}
                 disabled={!isReturned && !returnedTo.trim()}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto px-4 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Confirm
               </button>
