@@ -1,7 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import DescriptionSection from "./DescriptionSection";
 
 export default function ItemInfoSection({ item }) {
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
+  const backdropRef = useRef(null);
+  const MAX_PREVIEW_CHARS = 120;
+
+  const isLongDescription = item.description?.length > MAX_PREVIEW_CHARS;
+
+  useEffect(() => {
+    if (isDescriptionModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isDescriptionModalOpen]);
+
+  const handleBackdropClick = (e) => {
+    if (e.target === backdropRef.current) {
+      setIsDescriptionModalOpen(false);
+    }
+  };
 
   const formatContactInfo = (contactInfo) => {
     if (!contactInfo) return null;
@@ -167,43 +190,18 @@ export default function ItemInfoSection({ item }) {
 </div>
 
   {/* Description */}
-<div className="-mt-3">
-  <div className="flex items-center mb-1.5">
-    <svg
-      className="w-4 h-4 text-amber-500 mr-1.5"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-      />
-    </svg>
-    <p className="text-xs font-medium text-amber-700">Description:</p>
-  </div>
-
-  <div className="relative mb-2">
-    {/* Chat-style top-left tail */}
-    <div className="absolute -top-2 left-11 w-2 h-2 border-b-8 border-b-amber-300 border-l-8 border-l-transparent"></div>
-
-    {/* Description bubble with fixed dimensions */}
-    <div
-      className="mt-2 mr-auto text-xs mr-auto mx-[35px] relative text-sm text-gray-800 break-words pl-5 pr-4 py-2 bg-amber-100 border border-amber-300 rounded-xl rounded-bl-none shadow-sm w-[calc(100%-40px)] h-[5.1em] overflow-y-auto scrollbar-thin scrollbar-thumb-amber-400 scrollbar-track-amber-100"
-      style={{
-        scrollbarWidth: 'thin',
-        scrollbarColor: '#fbbf24 #fef3c7',
-      }}
-    >
-      {item.description}
-    </div>
-  </div>
-</div>
+  <DescriptionSection 
+    description={item.description}
+    isLongDescription={isLongDescription}
+    isModalOpen={isDescriptionModalOpen}
+    onModalOpen={() => setIsDescriptionModalOpen(true)}
+    onModalClose={() => setIsDescriptionModalOpen(false)}
+    backdropRef={backdropRef}
+    onBackdropClick={handleBackdropClick}
+  />
 
 {/* Contact Info */}
-<div className="-mt-4 border border-blue-100 bg-blue-50/50 p-2 rounded-xl">
+<div className="-mt-5 border border-blue-100 bg-blue-50/50 p-2 rounded-xl">
   <div className="flex items-center mb-1.5">
     <svg
       className="w-4 h-4 text-blue-500 mr-1.5"

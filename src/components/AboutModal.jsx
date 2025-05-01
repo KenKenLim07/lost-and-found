@@ -8,7 +8,7 @@ export default function AboutModal({ isOpen, onClose }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/50 flex items-center md:items-start justify-center z-50 p-4 md:pt-[25vh]"
           onClick={onClose}
         >
           <motion.div
@@ -16,14 +16,13 @@ export default function AboutModal({ isOpen, onClose }) {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
-            className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 sm:p-7 mt-[39.3vh]"
+            className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 sm:p-7"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-800">
                 About This App
               </h2>
-              
             </div>
 
             <div className="text-sm text-gray-600 space-y-4">
