@@ -11,7 +11,7 @@ export default function DescriptionSection({
 }) {
   return (
     <>
-      <div className="-mt-6">
+      <div className="-mt-3">
         <div className="flex items-center mb-1.5">
           <svg
             className="w-4 h-4 text-amber-500 mr-1.5"
@@ -31,11 +31,10 @@ export default function DescriptionSection({
 
         <div className="relative mb-2">
           {/* Chat-style top-left tail */}
-          <div className="absolute -top-2 left-11 w-2 h-2 border-b-8 border-b-amber-300 border-l-8 border-l-transparent"></div>
 
           {/* Description bubble */}
           <div
-            className="mt-2 mr-auto text-xm mx-4 sm:mx-[35px] relative text-sm text-gray-800 break-words pl-4 pr-4 py-1 bg-amber-100 border-[1px] border-amber-300 rounded-xl rounded-bl-none shadow-sm overflow-hidden line-clamp-3 leading-[1.3rem] leading-[1.3rem] h-[4.3rem]"
+            className="-mt-1 mr-auto text-xm mx-4 sm:mx-[35px] relative text-sm text-gray-800 break-words pl-4 pr-4 py-1 bg-amber-100 border-[1px] border-amber-300 rounded-xl rounded-bl-none shadow-sm overflow-hidden line-clamp-3 leading-[1.3rem] leading-[1.3rem] h-[4.3rem]"
             style={{
               display: '-webkit-box',
               WebkitLineClamp: 3,
