@@ -67,13 +67,14 @@ export default function DescriptionSection({
             exit={{ opacity: 0 }}
             onClick={onBackdropClick}
           >
-            <motion.div
-              className="bg-white rounded-xl w-[90%] max-w-2xl shadow-xl p-4 sm:p-6"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 30 }}
-              transition={{ type: "spring", stiffness: 300, damping: 24 }}
-            >
+           <motion.div
+  className="bg-white rounded-xl w-[90%] max-w-2xl shadow-xl p-4 sm:p-6 overflow-y-auto max-h-[90vh]"
+  initial={{ opacity: 0, scale: 0.95 }}
+  animate={{ opacity: 1, scale: 1 }}
+  exit={{ opacity: 0, scale: 0.95 }}
+  transition={{ type: "spring", stiffness: 300, damping: 24 }}
+>
+
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-base font-semibold sm:text-lg text-gray-800">Item Description</h3>
                 <button
