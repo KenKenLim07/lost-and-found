@@ -1,35 +1,9 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeScale } from "../animations/variants";
 import { X } from "lucide-react"; // optional: install lucide-react for elegant icons
 
 export default function FullScreenImageModal({ imageUrl, onClose }) {
-  const [scale, setScale] = useState(1);
-  const [isDragging, setIsDragging] = useState(false);
-  const imageRef = useRef(null);
-  const containerRef = useRef(null);
-
-  // Calculate drag constraints based on scale
-  const getDragConstraints = () => {
-    if (!imageRef.current || !containerRef.current) return { top: 0, bottom: 0, left: 0, right: 0 };
-    
-    const image = imageRef.current;
-    const container = containerRef.current;
-    
-    const scaledWidth = image.offsetWidth * scale;
-    const scaledHeight = image.offsetHeight * scale;
-    
-    const maxX = Math.max(0, (scaledWidth - container.offsetWidth) / 2);
-    const maxY = Math.max(0, (scaledHeight - container.offsetHeight) / 2);
-    
-    return {
-      top: -maxY,
-      bottom: maxY,
-      left: -maxX,
-      right: maxX
-    };
-  };
-
   // Escape key closes modal and handle scroll lock
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -50,21 +24,6 @@ export default function FullScreenImageModal({ imageUrl, onClose }) {
     };
   }, [imageUrl, onClose]);
 
-  const handleDragEnd = (event, info) => {
-    // Only trigger close if we're not zoomed in
-    if (scale === 1) {
-      const threshold = 100; // Minimum distance to trigger close
-      if (Math.abs(info.offset.y) > threshold) {
-        onClose();
-      }
-    }
-    setIsDragging(false);
-  };
-
-  const handleDragStart = () => {
-    setIsDragging(true);
-  };
-
   return (
     <AnimatePresence>
       {imageUrl && (
@@ -73,56 +32,18 @@ export default function FullScreenImageModal({ imageUrl, onClose }) {
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm overflow-hidden"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
           aria-modal="true"
           role="dialog"
-          ref={containerRef}
         >
           <motion.div
             variants={fadeScale}
             className="relative w-full max-w-4xl mx-4"
           >
-            <motion.img
-              ref={imageRef}
+            <img
               src={imageUrl}
               alt="Zoomed item"
-              className="w-full h-auto max-h-[80vh] object-contain rounded-2xl shadow-lg select-none touch-none"
-              drag={scale === 1 ? "y" : true}
-              dragConstraints={scale === 1 ? { top: 0, bottom: 0 } : getDragConstraints}
-              dragElastic={0.7}
-              onDragEnd={handleDragEnd}
-              onDragStart={handleDragStart}
-              whileDrag={{ scale: isDragging && scale === 1 ? 0.95 : scale }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              style={{
-                scale,
-                cursor: scale > 1 ? "grab" : "default",
-              }}
-              onWheel={(e) => {
-                if (e.ctrlKey) {
-                  e.preventDefault();
-                  const newScale = Math.min(Math.max(scale - e.deltaY * 0.01, 1), 3);
-                  setScale(newScale);
-                }
-              }}
-              onTouchStart={(e) => {
-                if (e.touches.length === 2) {
-                  e.preventDefault();
-                }
-              }}
-              onTouchMove={(e) => {
-                if (e.touches.length === 2) {
-                  e.preventDefault();
-                  const touch1 = e.touches[0];
-                  const touch2 = e.touches[1];
-                  const distance = Math.hypot(
-                    touch2.clientX - touch1.clientX,
-                    touch2.clientY - touch1.clientY
-                  );
-                  const newScale = Math.min(Math.max(distance / 200, 1), 3);
-                  setScale(newScale);
-                }
-              }}
+              className="w-full h-auto max-h-[80vh] object-contain rounded-2xl shadow-lg"
             />
 
             {/* Close Button */}
