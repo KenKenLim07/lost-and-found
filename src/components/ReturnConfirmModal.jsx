@@ -1,5 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import useScrollLock from "../hooks/useScrollLock";
+import useEscapeKey from "../hooks/useEscapeKey";
 
 export default function ReturnConfirmModal({
   isOpen,
@@ -12,23 +14,8 @@ export default function ReturnConfirmModal({
 }) {
   const backdropRef = useRef(null);
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") onClose();
-    };
-
-    if (isOpen) {
-      document.body.classList.add("overflow-hidden");
-    } else {
-      document.body.classList.remove("overflow-hidden");
-    }
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.body.classList.remove("overflow-hidden");
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen, onClose]);
+  useScrollLock(isOpen);
+  useEscapeKey(onClose, isOpen);
 
   const handleBackdropClick = (e) => {
     if (e.target === backdropRef.current) onClose();

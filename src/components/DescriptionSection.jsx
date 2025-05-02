@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function DescriptionSection({
@@ -9,6 +10,18 @@ export default function DescriptionSection({
   backdropRef,
   onBackdropClick
 }) {
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, [isModalOpen]);
+
   return (
     <>
       <div className="-mt-3">
@@ -30,11 +43,8 @@ export default function DescriptionSection({
         </div>
 
         <div className="relative mb-2">
-          {/* Chat-style top-left tail */}
-
-          {/* Description bubble */}
           <div
-            className="-mt-1 mr-auto text-xm mx-4 sm:mx-[35px] relative text-sm text-gray-800 break-words pl-4 pr-4 py-1 bg-amber-100 border-[1px] border-amber-300 rounded-xl rounded-bl-none shadow-sm overflow-hidden line-clamp-3 leading-[1.3rem] leading-[1.3rem] h-[4.3rem]"
+            className="-mt-1 mr-auto text-xm mx-4 sm:mx-[35px] relative text-sm text-gray-800 break-words pl-4 pr-4 py-1 bg-amber-100 border-[1px] border-amber-300 rounded-xl rounded-bl-none shadow-sm overflow-hidden line-clamp-3 leading-[1.3rem] h-[4.3rem]"
             style={{
               display: '-webkit-box',
               WebkitLineClamp: 3,
@@ -66,14 +76,13 @@ export default function DescriptionSection({
             exit={{ opacity: 0 }}
             onClick={onBackdropClick}
           >
-           <motion.div
-  className="bg-white rounded-xl w-[90%] max-w-2xl shadow-xl p-4 sm:p-6 overflow-y-auto max-h-[90vh]"
-  initial={{ opacity: 0, scale: 0.95 }}
-  animate={{ opacity: 1, scale: 1 }}
-  exit={{ opacity: 0, scale: 0.95 }}
-  transition={{ type: "spring", stiffness: 300, damping: 24 }}
->
-
+            <motion.div
+              className="bg-white rounded-xl w-[90%] max-w-2xl shadow-xl p-4 sm:p-6 overflow-y-auto max-h-[90vh]"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300, damping: 24 }}
+            >
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-base font-semibold sm:text-lg text-gray-800">Item Description</h3>
                 <button
@@ -94,4 +103,4 @@ export default function DescriptionSection({
       </AnimatePresence>
     </>
   );
-} 
+}

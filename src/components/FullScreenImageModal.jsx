@@ -1,26 +1,35 @@
 import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeScale } from "../animations/variants";
-import { X } from "lucide-react"; // optional: install lucide-react for elegant icons
+import { X } from "lucide-react";
 
 export default function FullScreenImageModal({ imageUrl, onClose }) {
-  // Escape key closes modal and handle scroll lock
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") onClose();
     };
 
-    // Lock scroll when modal is open
     if (imageUrl) {
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
       document.body.style.overflow = "hidden";
+      document.body.dataset.scrollY = scrollY;
     }
 
     window.addEventListener("keydown", handleKeyDown);
-    
-    // Cleanup function
+
     return () => {
+      const scrollY = document.body.dataset.scrollY || "0";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.overflow = "";
+      window.scrollTo(0, parseInt(scrollY));
       window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = ""; // Restore scroll when modal closes
     };
   }, [imageUrl, onClose]);
 
@@ -46,7 +55,6 @@ export default function FullScreenImageModal({ imageUrl, onClose }) {
               className="w-full h-auto max-h-[80vh] object-contain rounded-2xl shadow-lg"
             />
 
-            {/* Close Button */}
             <button
               onClick={onClose}
               aria-label="Close full screen image"
