@@ -5,15 +5,32 @@ export default function DeleteConfirmModal({ isOpen, onClose, onConfirm }) {
   const backdropRef = useRef(null);
 
   useEffect(() => {
+    const scrollY = window.scrollY;
+
     if (isOpen) {
-      // Prevent background scrolling
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
       document.body.style.overflow = "hidden";
     } else {
+      const top = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
       document.body.style.overflow = "";
+      window.scrollTo(0, parseInt(top || "0") * -1);
     }
 
     return () => {
+      const top = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
       document.body.style.overflow = "";
+      window.scrollTo(0, parseInt(top || "0") * -1);
     };
   }, [isOpen]);
 
