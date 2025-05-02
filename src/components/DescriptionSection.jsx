@@ -1,5 +1,6 @@
-import { useEffect } from "react";
+import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import useScrollLock from "../hooks/useScrollLock";
 
 export default function DescriptionSection({
   description,
@@ -7,20 +8,14 @@ export default function DescriptionSection({
   isModalOpen,
   onModalOpen,
   onModalClose,
-  backdropRef,
-  onBackdropClick
 }) {
-  useEffect(() => {
-    if (isModalOpen) {
-      document.body.classList.add("overflow-hidden");
-    } else {
-      document.body.classList.remove("overflow-hidden");
-    }
+  const backdropRef = useRef(null);
 
-    return () => {
-      document.body.classList.remove("overflow-hidden");
-    };
-  }, [isModalOpen]);
+  useScrollLock(isModalOpen);
+
+  const handleBackdropClick = (e) => {
+    if (e.target === backdropRef.current) onModalClose();
+  };
 
   return (
     <>
@@ -74,7 +69,7 @@ export default function DescriptionSection({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onBackdropClick}
+            onClick={handleBackdropClick}
           >
             <motion.div
               className="bg-white rounded-xl w-[90%] max-w-2xl shadow-xl p-4 sm:p-6 overflow-y-auto max-h-[90vh]"
@@ -84,13 +79,25 @@ export default function DescriptionSection({
               transition={{ type: "spring", stiffness: 300, damping: 24 }}
             >
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-base font-semibold sm:text-lg text-gray-800">Item Description</h3>
+                <h3 className="text-base font-semibold sm:text-lg text-gray-800">
+                  Item Description
+                </h3>
                 <button
                   onClick={onModalClose}
                   className="text-gray-500 hover:text-gray-700"
                 >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>

@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import useScrollLock from "../hooks/useScrollLock";
-import useEscapeKey from "../hooks/useEscapeKey";
 
 export default function ReturnConfirmModal({
   isOpen,
@@ -15,7 +14,6 @@ export default function ReturnConfirmModal({
   const backdropRef = useRef(null);
 
   useScrollLock(isOpen);
-  useEscapeKey(onClose, isOpen);
 
   const handleBackdropClick = (e) => {
     if (e.target === backdropRef.current) onClose();
