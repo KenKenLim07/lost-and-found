@@ -1,9 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeScale } from "../animations/variants";
 import { X } from "lucide-react"; // optional: install lucide-react for elegant icons
 
 export default function FullScreenImageModal({ imageUrl, onClose }) {
+  const [scale, setScale] = useState(1);
+  const [isDragging, setIsDragging] = useState(false);
+
   // Escape key closes modal and handle scroll lock
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -25,10 +28,18 @@ export default function FullScreenImageModal({ imageUrl, onClose }) {
   }, [imageUrl, onClose]);
 
   const handleDragEnd = (event, info) => {
-    const threshold = 100; // Minimum distance to trigger close
-    if (Math.abs(info.offset.y) > threshold) {
-      onClose();
+    // Only trigger close if we're not zoomed in
+    if (scale === 1) {
+      const threshold = 100; // Minimum distance to trigger close
+      if (Math.abs(info.offset.y) > threshold) {
+        onClose();
+      }
     }
+    setIsDragging(false);
+  };
+
+  const handleDragStart = () => {
+    setIsDragging(true);
   };
 
   return (
@@ -46,23 +57,47 @@ export default function FullScreenImageModal({ imageUrl, onClose }) {
           <motion.div
             variants={fadeScale}
             className="relative w-full max-w-4xl mx-4"
-            drag="y"
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={0.7}
-            onDragEnd={handleDragEnd}
-            whileDrag={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <motion.img
               src={imageUrl}
               alt="Zoomed item"
-              className="w-full h-auto max-h-[80vh] object-contain rounded-2xl shadow-lg select-none"
-              drag="y"
-              dragConstraints={{ top: 0, bottom: 0 }}
+              className="w-full h-auto max-h-[80vh] object-contain rounded-2xl shadow-lg select-none touch-none"
+              drag={scale === 1 ? "y" : true}
+              dragConstraints={scale === 1 ? { top: 0, bottom: 0 } : undefined}
               dragElastic={0.7}
               onDragEnd={handleDragEnd}
-              whileDrag={{ scale: 0.95 }}
+              onDragStart={handleDragStart}
+              whileDrag={{ scale: isDragging && scale === 1 ? 0.95 : scale }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              style={{
+                scale,
+                cursor: scale > 1 ? "grab" : "default",
+              }}
+              onWheel={(e) => {
+                if (e.ctrlKey) {
+                  e.preventDefault();
+                  const newScale = Math.min(Math.max(scale - e.deltaY * 0.01, 1), 3);
+                  setScale(newScale);
+                }
+              }}
+              onTouchStart={(e) => {
+                if (e.touches.length === 2) {
+                  e.preventDefault();
+                }
+              }}
+              onTouchMove={(e) => {
+                if (e.touches.length === 2) {
+                  e.preventDefault();
+                  const touch1 = e.touches[0];
+                  const touch2 = e.touches[1];
+                  const distance = Math.hypot(
+                    touch2.clientX - touch1.clientX,
+                    touch2.clientY - touch1.clientY
+                  );
+                  const newScale = Math.min(Math.max(distance / 200, 1), 3);
+                  setScale(newScale);
+                }
+              }}
             />
 
             {/* Close Button */}
