@@ -6,6 +6,8 @@ import AuthForm from "./components/AuthForm";
 import NavBar from "./components/NavBar";
 import { useUser } from "./hooks/useUser";
 import { supabase } from "./lib/supabase";
+import WeeklyRewardBanner from "./components/WeeklyRewardBanner";
+import { WinnersProvider } from './context/WinnersContext';
 
 // Lazy load components that are not immediately needed
 const FullScreenImageModal = lazy(() => import("./components/FullScreenImageModal"));
@@ -37,22 +39,25 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <NavBar onSignOut={handleSignOut} />
+    <WinnersProvider>
+      <div className="min-h-screen bg-white">
+        <NavBar onSignOut={handleSignOut} />
+        <WeeklyRewardBanner />
 
-      <div className="p-2">
-        <PostItemForm user={user} onItemPosted={() => itemListRef.current?.refresh()} />
-        <ItemList ref={itemListRef} />
+        <div className="p-2">
+          <PostItemForm user={user} onItemPosted={() => itemListRef.current?.refresh()} />
+          <ItemList ref={itemListRef} />
+        </div>
+
+        {/* Wrap lazy-loaded components in Suspense */}
+        <Suspense fallback={<LoadingFallback />}>
+          <FullScreenImageModal />
+          <AboutModal />
+          <DeleteConfirmModal />
+          <ReturnConfirmModal />
+        </Suspense>
       </div>
-
-      {/* Wrap lazy-loaded components in Suspense */}
-      <Suspense fallback={<LoadingFallback />}>
-        <FullScreenImageModal />
-        <AboutModal />
-        <DeleteConfirmModal />
-        <ReturnConfirmModal />
-      </Suspense>
-    </div>
+    </WinnersProvider>
   );
 }
 

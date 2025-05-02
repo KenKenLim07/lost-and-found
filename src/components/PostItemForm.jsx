@@ -5,6 +5,17 @@ import { StatusSelect } from "./forms/StatusSelect";
 import { FormInput } from "./forms/FormInput";
 import { FormTextarea } from "./forms/FormTextarea";
 import { FileUpload } from "./forms/FileUpload";
+import { useState } from 'react';
+import { supabase } from '../lib/supabase';
+import WinnerPromptModal from './WinnerPromptModal';
+
+function getCurrentWeekStart() {
+  const now = new Date();
+  const day = now.getDay(); // 0 = Sunday, 1 = Monday...
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1); // adjust to Monday
+  const monday = new Date(now.setDate(diff));
+  return monday.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+}
 
 export default function PostItemForm({ user, onItemPosted }) {
   const {
@@ -14,9 +25,38 @@ export default function PostItemForm({ user, onItemPosted }) {
     errorMsg,
     uploadProgress,
     handleInputChange,
-    handleSubmit,
+    handleSubmit: submitItem,
     errors,
   } = useItemForm(user, onItemPosted);
+
+  const [showWinnerPrompt, setShowWinnerPrompt] = useState(false);
+  const [winners, setWinners] = useState([]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      // First submit the item
+      await submitItem(e);
+
+      // Then check if user is one of first two this week
+      const { data: winnersData, error: winnersError } = await supabase
+        .from('weekly_winners')
+        .select('*')
+        .eq('week_start', getCurrentWeekStart());
+
+      if (winnersError) throw winnersError;
+
+      setWinners(winnersData || []);
+
+      // If there are less than 2 winners, show the prompt
+      if (winnersData.length < 2) {
+        setShowWinnerPrompt(true);
+      }
+    } catch (error) {
+      console.error('Error in form submission:', error);
+    }
+  };
 
   return (
     <motion.div
@@ -142,7 +182,6 @@ export default function PostItemForm({ user, onItemPosted }) {
                 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 
                 disabled:bg-blue-300 disabled:cursor-not-allowed transition duration-200
               `}
-              
             >
               {loading ? (
                 <div className="flex items-center justify-center">
@@ -175,6 +214,13 @@ export default function PostItemForm({ user, onItemPosted }) {
           </form>
         </div>
       </div>
+
+      <WinnerPromptModal
+        isOpen={showWinnerPrompt}
+        onClose={() => setShowWinnerPrompt(false)}
+        userId={user.id}
+        position={winners.length + 1}
+      />
     </motion.div>
   );
 }
