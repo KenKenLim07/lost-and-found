@@ -4,14 +4,25 @@ import { fadeScale } from "../animations/variants";
 import { X } from "lucide-react"; // optional: install lucide-react for elegant icons
 
 export default function FullScreenImageModal({ imageUrl, onClose }) {
-  // Escape key closes modal
+  // Escape key closes modal and handle scroll lock
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") onClose();
     };
+
+    // Lock scroll when modal is open
+    if (imageUrl) {
+      document.body.style.overflow = "hidden";
+    }
+
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
+    
+    // Cleanup function
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = ""; // Restore scroll when modal closes
+    };
+  }, [imageUrl, onClose]);
 
   return (
     <AnimatePresence>
