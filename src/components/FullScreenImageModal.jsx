@@ -24,6 +24,13 @@ export default function FullScreenImageModal({ imageUrl, onClose }) {
     };
   }, [imageUrl, onClose]);
 
+  const handleDragEnd = (event, info) => {
+    const threshold = 100; // Minimum distance to trigger close
+    if (Math.abs(info.offset.y) > threshold) {
+      onClose();
+    }
+  };
+
   return (
     <AnimatePresence>
       {imageUrl && (
@@ -39,11 +46,23 @@ export default function FullScreenImageModal({ imageUrl, onClose }) {
           <motion.div
             variants={fadeScale}
             className="relative w-full max-w-4xl mx-4"
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={0.7}
+            onDragEnd={handleDragEnd}
+            whileDrag={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
-            <img
+            <motion.img
               src={imageUrl}
               alt="Zoomed item"
-              className="w-full h-auto max-h-[80vh] object-contain rounded-2xl shadow-lg"
+              className="w-full h-auto max-h-[80vh] object-contain rounded-2xl shadow-lg select-none"
+              drag="y"
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={0.7}
+              onDragEnd={handleDragEnd}
+              whileDrag={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
             />
 
             {/* Close Button */}
