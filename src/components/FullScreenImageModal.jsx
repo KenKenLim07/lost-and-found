@@ -13,24 +13,25 @@ export default function FullScreenImageModal({ imageUrl, onClose }) {
 
   // Escape key closes modal (fallback for desktop users)
   useEffect(() => {
+    if (!imageUrl) return; // don't do anything if modal is not shown
+  
     const handleKeyDown = (e) => {
       if (e.key === "Escape") onClose();
     };
   
-    // Prevent scrolling on both body and html
+    // Lock scroll
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
-  
     window.addEventListener("keydown", handleKeyDown);
   
     return () => {
+      // Cleanup
       window.removeEventListener("keydown", handleKeyDown);
-      
-      // Restore scroll when modal is closed
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
     };
-  }, [onClose]);
+  }, [imageUrl, onClose]);
+  
   
 
   return (
