@@ -47,43 +47,42 @@ export default function WinnerPromptModal({ isOpen, onClose, userId, position })
     try {
       const winnerName = `${formData.completeName} (${formData.year}-${formData.section})`;
       
-      // Try to find existing winner record
-      const { data: existingWinner, error: findError } = await supabase
+      // Check if there's already a winner in this position for this week
+      const { data: existingPositionWinner, error: positionError } = await supabase
         .from('weekly_winners')
         .select('id')
-        .eq('user_id', userId)
+        .eq('position', position)
         .eq('week_start', getCurrentWeekStart())
         .maybeSingle();
 
-      if (findError) {
-        console.error('Error finding winner:', findError);
-        throw findError;
+      if (positionError) {
+        console.error('Error checking position:', positionError);
+        throw positionError;
       }
 
-      const winnerData = {
-        name: winnerName,
-        week_start: getCurrentWeekStart(),
-        position: position
-      };
-
-      if (existingWinner) {
-        // Update existing record
+      // If there's already a winner in this position, update their record
+      if (existingPositionWinner) {
         const { error: updateError } = await supabase
           .from('weekly_winners')
-          .update(winnerData)
-          .eq('id', existingWinner.id);
+          .update({
+            name: winnerName,
+            user_id: userId
+          })
+          .eq('id', existingPositionWinner.id);
 
         if (updateError) {
           console.error('Error updating winner:', updateError);
           throw updateError;
         }
       } else {
-        // Create new record
+        // Create new record if no winner in this position
         const { error: insertError } = await supabase
           .from('weekly_winners')
           .insert({
-            ...winnerData,
-            user_id: userId
+            name: winnerName,
+            user_id: userId,
+            position: position,
+            week_start: getCurrentWeekStart()
           });
 
         if (insertError) {
@@ -95,7 +94,8 @@ export default function WinnerPromptModal({ isOpen, onClose, userId, position })
       // Immediately update the local state
       addWinner({
         name: winnerName,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        position: position
       });
       
       onClose();

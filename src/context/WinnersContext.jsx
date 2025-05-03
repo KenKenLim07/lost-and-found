@@ -11,9 +11,9 @@ export function WinnersProvider({ children }) {
     try {
       const { data, error } = await supabase
         .from('weekly_winners')
-        .select('name, created_at')
+        .select('name, created_at, position')
         .eq('week_start', getCurrentWeekStart())
-        .order('created_at', { ascending: true })
+        .order('position', { ascending: true })
         .limit(2);
 
       if (!error && data) {
@@ -52,8 +52,14 @@ export function WinnersProvider({ children }) {
 
   const addWinner = (winner) => {
     setWinners(prev => {
-      const newWinners = [...prev, winner];
-      return newWinners.sort((a, b) => a.created_at - b.created_at).slice(0, 2);
+      const newWinners = [...prev];
+      const index = newWinners.findIndex(w => w.position === winner.position);
+      if (index !== -1) {
+        newWinners[index] = winner;
+      } else {
+        newWinners.push(winner);
+      }
+      return newWinners.sort((a, b) => a.position - b.position);
     });
   };
 

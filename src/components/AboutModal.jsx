@@ -1,14 +1,17 @@
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function AboutModal({ isOpen, onClose }) {
-  return (
+  if (typeof window === 'undefined') return null; // SSR safety
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 flex items-center md:items-start justify-center z-50 p-4 md:pt-[25vh]"
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
           onClick={onClose}
         >
           <motion.div
@@ -33,7 +36,7 @@ export default function AboutModal({ isOpen, onClose }) {
                 Initially, this was just a portfolio project — but then I thought, maybe it could actually help us here at the Mosqueda campus. If you ever lose or find something, you can post it here.
               </p>
               <p>
-                Just putting it out there — maybe it’ll come in handy. Thank you!
+                Just putting it out there — maybe it'll come in handy. Thank you!
               </p>
             </div>
 
@@ -48,6 +51,7 @@ export default function AboutModal({ isOpen, onClose }) {
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
