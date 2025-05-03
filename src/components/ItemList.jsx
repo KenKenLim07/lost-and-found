@@ -167,10 +167,10 @@ const ItemList = forwardRef((props, ref) => {
       {/* Fullscreen Image Modal with Suspense */}
       {selectedImage && (
         <Suspense fallback={<ModalLoadingFallback />}>
-          <FullScreenImageModal
-            imageUrl={selectedImage}
-            onClose={() => setSelectedImage(null)}
-          />
+      <FullScreenImageModal
+        imageUrl={selectedImage}
+        onClose={() => setSelectedImage(null)}
+      />
         </Suspense>
       )}
     </div>

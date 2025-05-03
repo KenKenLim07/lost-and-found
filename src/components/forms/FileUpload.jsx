@@ -31,14 +31,14 @@ export function FileUpload({ onChange, error }) {
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
         alert("File size must be less than 10MB");
-        return;
-      }
+      return;
+    }
       onChange(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreview(reader.result);
+    };
+    reader.readAsDataURL(file);
     }
   };
 
@@ -72,24 +72,24 @@ export function FileUpload({ onChange, error }) {
         
         <AnimatePresence>
           {preview ? (
-            <motion.div
+          <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               className="absolute inset-0 flex items-center justify-center p-1"
-            >
-              <img
-                src={preview}
-                alt="Preview"
+          >
+            <img
+              src={preview}
+              alt="Preview"
                 className="max-h-full max-w-full object-contain rounded"
-              />
-              <button
-                type="button"
+            />
+            <button
+              type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setPreview(null);
+                setPreview(null);
                   onChange(null);
-                }}
+              }}
                 className="absolute top-1 right-1 p-0.5 bg-white/80 rounded-full shadow-sm hover:bg-white"
               >
                 <svg className="w-3 h-3 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -128,9 +128,9 @@ export function FileUpload({ onChange, error }) {
                   PNG, JPG, GIF up to 10MB
                 </p>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
       </div>
       {error && (
         <p className="mt-0.5 text-[11px] text-red-600 font-medium">{error}</p>
