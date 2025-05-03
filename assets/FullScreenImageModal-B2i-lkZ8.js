@@ -1,4 +1,4 @@
-import{j as o,A as a,m as l}from"./motion-vendor-D81zM_kR.js";import{r as i}from"./react-vendor-BfzFPDbv.js";import{c,f as d}from"./index-CKr2ckyu.js";import"./supabase-vendor-DvcNjl5m.js";/**
+import{j as o,A as a,m as l}from"./motion-vendor-D81zM_kR.js";import{r as i}from"./react-vendor-BfzFPDbv.js";import{c,f as d}from"./index-BFc_Pxfz.js";import"./supabase-vendor-DvcNjl5m.js";/**
  * @license lucide-react v0.503.0 - ISC
  *
  * This source code is licensed under the ISC license.
