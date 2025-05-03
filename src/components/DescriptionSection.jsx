@@ -65,14 +65,14 @@ export default function DescriptionSection({
         {isModalOpen && (
           <motion.div
             ref={backdropRef}
-            className="fixed inset-0 bg-black/40 z-50 flex items-start justify-center pt-[80vh] p-2 sm:p-4 landscape:items-center landscape:pt-[60vh]"
+            className="fixed inset-0 bg-black/40 z-50 flex items-start justify-center pt-[65vh] p-2 sm:p-4 landscape:items-center landscape:pt-[75vh]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleBackdropClick}
           >
             <motion.div
-              className="bg-white rounded-xl w-[90%] max-w-2xl shadow-xl p-4 sm:p-6 overflow-y-auto max-h-[90vh]"
+              className="bg-white rounded-xl w-[100%] max-w-2xl shadow-xl p-4 sm:p-6 overflow-y-auto max-h-[100vh]"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
