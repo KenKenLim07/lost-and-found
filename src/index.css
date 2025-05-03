@@ -27,7 +27,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* index.css or App.css */
 @media (orientation: landscape) {
-  .landscape\:pt-\[40vh\] {
-    padding-top: 40vh !important;
+  .landscape\:pt-\[77vh\] {
+    padding-top: 77vh !important;
   }
 }

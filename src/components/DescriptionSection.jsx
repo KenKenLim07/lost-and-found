@@ -65,7 +65,7 @@ export default function DescriptionSection({
         {isModalOpen && (
           <motion.div
             ref={backdropRef}
-            className="fixed inset-0 bg-black/40 z-50 flex items-start justify-center pt-[65vh] p-2 sm:p-4 landscape:items-center landscape:pt-[75vh]"
+            className="fixed inset-0 bg-black/40 z-50 flex items-start justify-center pt-[66vh] p-2 sm:p-4 landscape:items-center landscape:pt-[77vh]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
