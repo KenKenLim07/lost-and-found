@@ -7,7 +7,7 @@ export function getRewardMessage(winners) {
   const topWinners = winners.slice(0, 2);
 
   if (topWinners.length === 0) {
-    return "First two posters this week win ₱50 and a shoutout!";
+    return "First two unique posters this week win ₱50 and a shoutout! (Only your first post counts)";
   }
 
   if (topWinners.length === 1) {
@@ -15,7 +15,7 @@ export function getRewardMessage(winners) {
       <>
         Shoutout to <HighlightedName name={topWinners[0].name} />! You've won ₱{REWARD_AMOUNT}! I'll contact you about claiming your reward.
         <br />
-        <span className="text-cyan-200">One slot left! Post now to win ₱{REWARD_AMOUNT}!</span>
+        <span className="text-cyan-200">One slot left! Post now to win ₱{REWARD_AMOUNT}! (Only your first post counts)</span>
       </>
     );
   }

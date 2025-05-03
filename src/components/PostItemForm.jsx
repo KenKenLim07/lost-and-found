@@ -47,10 +47,14 @@ export default function PostItemForm({ user, onItemPosted }) {
 
       if (winnersError) throw winnersError;
 
-      setWinners(winnersData || []);
-
-      // If there are less than 2 winners, show the prompt
-      if (winnersData.length < 2) {
+      // Check if user already has a post this week
+      const userHasPost = winnersData?.some(winner => winner.user_id === user.id);
+      
+      // Only show prompt if:
+      // 1. User doesn't have a post this week
+      // 2. There are less than 2 winners
+      if (!userHasPost && winnersData.length < 2) {
+        setWinners(winnersData || []);
         setShowWinnerPrompt(true);
       }
     } catch (error) {

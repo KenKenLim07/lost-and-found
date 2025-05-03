@@ -19,10 +19,19 @@ export default function WinnerPromptModal({ isOpen, onClose, userId, position })
     section: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { addWinner } = useWinners();
+  const [submitError, setSubmitError] = useState(null);
+  const { addWinner, winners, fetchWinners } = useWinners();
 
   useEffect(() => {
     if (isOpen) {
+      // Reset form state when modal opens
+      setFormData({
+        completeName: '',
+        year: '',
+        section: ''
+      });
+      setSubmitError(null);
+      
       // Trigger confetti when modal opens
       confetti({
         particleCount: 100,
@@ -38,70 +47,50 @@ export default function WinnerPromptModal({ isOpen, onClose, userId, position })
       ...prev,
       [name]: value
     }));
+    // Clear any previous errors when user starts typing
+    if (submitError) setSubmitError(null);
   };
 
   const handleSubmit = async () => {
-    if (!formData.completeName.trim() || !formData.year.trim() || !formData.section.trim()) return;
+    if (!formData.completeName.trim() || !formData.year.trim() || !formData.section.trim()) {
+      setSubmitError('Please fill in all fields');
+      return;
+    }
 
     setIsSubmitting(true);
+    setSubmitError(null);
+    
     try {
       const winnerName = `${formData.completeName} (${formData.year}-${formData.section})`;
+      console.log('Submitting winner:', { name: winnerName, userId, position });
       
-      // Check if there's already a winner in this position for this week
-      const { data: existingPositionWinner, error: positionError } = await supabase
+      // Add the new winner
+      const { data: newWinner, error: insertError } = await supabase
         .from('weekly_winners')
-        .select('id')
-        .eq('position', position)
-        .eq('week_start', getCurrentWeekStart())
-        .maybeSingle();
+        .insert({
+          name: winnerName,
+          user_id: userId,
+          position: position,
+          week_start: getCurrentWeekStart()
+        })
+        .select()
+        .single();
 
-      if (positionError) {
-        console.error('Error checking position:', positionError);
-        throw positionError;
+      if (insertError) {
+        console.error('Error inserting winner:', insertError);
+        throw insertError;
       }
 
-      // If there's already a winner in this position, update their record
-      if (existingPositionWinner) {
-        const { error: updateError } = await supabase
-          .from('weekly_winners')
-          .update({
-            name: winnerName,
-            user_id: userId
-          })
-          .eq('id', existingPositionWinner.id);
-
-        if (updateError) {
-          console.error('Error updating winner:', updateError);
-          throw updateError;
-        }
-      } else {
-        // Create new record if no winner in this position
-        const { error: insertError } = await supabase
-          .from('weekly_winners')
-          .insert({
-            name: winnerName,
-            user_id: userId,
-            position: position,
-            week_start: getCurrentWeekStart()
-          });
-
-        if (insertError) {
-          console.error('Error inserting winner:', insertError);
-          throw insertError;
-        }
-      }
-
-      // Immediately update the local state
-      addWinner({
-        name: winnerName,
-        created_at: new Date().toISOString(),
-        position: position
-      });
+      console.log('Successfully inserted winner:', newWinner);
       
+      // Force a refresh of the winners list
+      await fetchWinners();
+      
+      // Close the modal after successful submission
       onClose();
     } catch (error) {
       console.error('Error submitting winner name:', error);
-      alert(`Failed to submit name: ${error.message}`);
+      setSubmitError(error.message || 'Failed to submit name. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -126,6 +115,13 @@ export default function WinnerPromptModal({ isOpen, onClose, userId, position })
             <p className="text-gray-600 mb-4">
               You're one of the first two posters this week! Enter your details to claim your ₱50 reward and shoutout.
             </p>
+            
+            {submitError && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+                {submitError}
+              </div>
+            )}
+
             <div className="space-y-4">
               <input
                 type="text"
@@ -134,6 +130,7 @@ export default function WinnerPromptModal({ isOpen, onClose, userId, position })
                 onChange={handleInputChange}
                 placeholder="Enter your complete name"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                disabled={isSubmitting}
               />
               <input
                 type="text"
@@ -142,6 +139,7 @@ export default function WinnerPromptModal({ isOpen, onClose, userId, position })
                 onChange={handleInputChange}
                 placeholder="Enter your year (e.g., 1st, 2nd, 3rd, 4th)"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                disabled={isSubmitting}
               />
               <input
                 type="text"
@@ -150,6 +148,7 @@ export default function WinnerPromptModal({ isOpen, onClose, userId, position })
                 onChange={handleInputChange}
                 placeholder="Enter your section"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                disabled={isSubmitting}
               />
             </div>
             <div className="flex justify-end gap-2 mt-6">
