@@ -10,22 +10,18 @@ export default function AuthForm() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [isConfirmationSent, setIsConfirmationSent] = useState(false)
 
   // 📥 Handle email/password login or signup
   const handleAuth = async (e) => {
     e.preventDefault()
     setError(null)
     setIsLoading(true)
-    setIsConfirmationSent(false)
 
     const { error } = isSignUp
       ? await supabase.auth.signUp({ email, password })
       : await supabase.auth.signInWithPassword({ email, password })
 
-    if (isSignUp && !error) {
-      setIsConfirmationSent(true)
-    } else if (error) {
+    if (error) {
       setError(error.message)
     }
 
@@ -66,40 +62,39 @@ export default function AuthForm() {
 
   return (
     <motion.div
-      className="w-full max-w-sm mx-auto p-6"
+      className="w-full max-w-sm mx-auto p-4 sm:p-6 min-h-screen flex items-center justify-center"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
-      {/* 🔲 Auth card container */}
       <motion.div
-        className="bg-white rounded-2xl shadow-xl p-8 space-y-6"
+        className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 space-y-4 sm:space-y-6 w-full"
         variants={itemVariants}
       >
-        {/* 🧢 App title */}
-        <motion.h1
-          className="text-2xl font-bold text-center text-blue-600"
+        <motion.div 
+          className="text-center space-y-2 sm:space-y-3"
           variants={itemVariants}
         >
-          Lost & Found
-        </motion.h1>
+          <div className="space-y-1">
+            <h1 className="text-sm text-gray-500 font-medium">
+              Hello
+            </h1>
+            <h2 className="text-2xl sm:text-3xl font-bold text-blue-600 tracking-wide">
+              Mosquedians!
+            </h2>
+          </div>
+          <p className="text-base sm:text-lg text-gray-800">
+            <span className="opacity-60">Lost</span> or <span className="font-bold">found</span> something?
+          </p>
+          <p className="text-xs text-gray-500 italic">
+            Congrats! "New Side Quest unlocked: return it."
+          </p>
+        </motion.div>
 
-        {/* 🪪 Login or signup prompt */}
-        <motion.h2
-          className="text-lg text-gray-600 text-center"
-          key={isSignUp ? 'signup' : 'login'}
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          {isSignUp ? 'Create an account' : 'Welcome back'}
-        </motion.h2>
-
-        {/* 📧 Email/Password Form */}
-        <form onSubmit={handleAuth} className="space-y-4">
+        <form onSubmit={handleAuth} className="space-y-3 sm:space-y-4">
           <motion.div variants={itemVariants}>
             <input
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-sm sm:text-base"
               type="email"
               placeholder="Email"
               value={email}
@@ -110,7 +105,7 @@ export default function AuthForm() {
 
           <motion.div variants={itemVariants}>
             <input
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-sm sm:text-base"
               type="password"
               placeholder="Password"
               value={password}
@@ -119,7 +114,6 @@ export default function AuthForm() {
             />
           </motion.div>
 
-          {/* 🧨 Error or confirmation messages */}
           <AnimatePresence mode="wait">
             {error && (
               <motion.p
@@ -127,30 +121,18 @@ export default function AuthForm() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="text-red-500 text-sm text-center"
+                className="text-red-500 text-xs sm:text-sm text-center"
               >
                 {error}
               </motion.p>
             )}
-            {isConfirmationSent && (
-              <motion.p
-                key="confirmation"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="text-green-500 text-sm text-center"
-              >
-                A confirmation email has been sent! Please check your inbox.
-              </motion.p>
-            )}
           </AnimatePresence>
 
-          {/* 🔘 Main auth button */}
           <motion.button
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className={`w-full py-3 rounded-xl text-white font-medium ${
+            className={`w-full py-2.5 sm:py-3 rounded-xl text-white font-medium text-sm sm:text-base ${
               isLoading
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-700'
@@ -161,23 +143,21 @@ export default function AuthForm() {
             {isLoading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Log In'}
           </motion.button>
 
-          {/* 🟩 Google login button */}
           <motion.button
             onClick={handleGoogleLogin}
             type="button"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="w-full py-3 flex items-center justify-center gap-2 mt-2 rounded-xl bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-medium"
+            className="w-full py-2.5 sm:py-3 flex items-center justify-center gap-2 rounded-xl bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-medium text-sm sm:text-base"
           >
-            <FcGoogle size={20} />
+            <FcGoogle size={18} className="sm:w-5 sm:h-5" />
             Continue with Google
           </motion.button>
         </form>
 
-        {/* 🔁 Toggle login/signup */}
         <motion.div
-          className="text-center text-sm text-gray-600"
+          className="text-center text-xs sm:text-sm text-gray-600"
           variants={itemVariants}
         >
           <button
