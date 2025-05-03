@@ -63,20 +63,20 @@ export default function AuthForm() {
   return (
     <div className="fixed inset-0 overflow-hidden">
       <motion.div
-        className="w-full max-w-sm mx-auto h-full flex items-center justify-center p-4 sm:p-6"
+        className="w-full max-w-sm mx-auto h-full flex items-center justify-center p-3 sm:p-4"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
       >
         <motion.div
-          className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 space-y-4 sm:space-y-6 w-full max-h-[90vh] overflow-y-auto"
+          className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 space-y-3 sm:space-y-4 w-full max-h-[85vh] overflow-y-auto"
           variants={itemVariants}
         >
           <motion.div 
-            className="text-center space-y-2 sm:space-y-3"
+            className="text-center space-y-1.5 sm:space-y-2"
             variants={itemVariants}
           >
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               <h1 className="text-sm text-gray-500 font-medium">
                 Hello
               </h1>
@@ -92,10 +92,10 @@ export default function AuthForm() {
             </p>
           </motion.div>
 
-          <form onSubmit={handleAuth} className="space-y-3 sm:space-y-4">
+          <form onSubmit={handleAuth} className="space-y-2.5 sm:space-y-3">
             <motion.div variants={itemVariants}>
               <input
-                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-sm sm:text-base"
+                className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-sm sm:text-base"
                 type="email"
                 placeholder="Email"
                 value={email}
@@ -106,7 +106,7 @@ export default function AuthForm() {
 
             <motion.div variants={itemVariants}>
               <input
-                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-sm sm:text-base"
+                className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-sm sm:text-base"
                 type="password"
                 placeholder="Password"
                 value={password}
@@ -133,7 +133,7 @@ export default function AuthForm() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className={`w-full py-2.5 sm:py-3 rounded-xl text-white font-medium text-sm sm:text-base ${
+              className={`w-full py-2 rounded-xl text-white font-medium text-sm sm:text-base ${
                 isLoading
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-blue-600 hover:bg-blue-700'
@@ -150,7 +150,7 @@ export default function AuthForm() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="w-full py-2.5 sm:py-3 flex items-center justify-center gap-2 rounded-xl bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-medium text-sm sm:text-base"
+              className="w-full py-2 flex items-center justify-center gap-2 rounded-xl bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-medium text-sm sm:text-base"
             >
               <FcGoogle size={18} className="sm:w-5 sm:h-5" />
               Continue with Google
