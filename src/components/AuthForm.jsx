@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FcGoogle } from 'react-icons/fc' // Google icon (optional)
+import { FaFacebook } from 'react-icons/fa'
 
 export default function AuthForm() {
   // 🔐 Auth-related states
@@ -32,6 +33,17 @@ export default function AuthForm() {
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
+    })
+
+    if (error) {
+      setError(error.message)
+    }
+  }
+
+  // 🔵 Handle Facebook OAuth login
+  const handleFacebookLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'facebook',
     })
 
     if (error) {
@@ -143,6 +155,15 @@ export default function AuthForm() {
             {isLoading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Log In'}
           </motion.button>
 
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200"></div>
+            </div>
+            <div className="relative flex justify-center text-xs sm:text-sm">
+              <span className="px-2 bg-white text-gray-500">or</span>
+            </div>
+          </div>
+
           <motion.button
             onClick={handleGoogleLogin}
             type="button"
@@ -153,6 +174,18 @@ export default function AuthForm() {
           >
             <FcGoogle size={18} className="sm:w-5 sm:h-5" />
             Continue with Google
+          </motion.button>
+
+          <motion.button
+            onClick={handleFacebookLogin}
+            type="button"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="w-full py-2.5 sm:py-3 flex items-center justify-center gap-2 rounded-xl bg-[#1877F2] hover:bg-[#166FE5] text-white font-medium text-sm sm:text-base"
+          >
+            <FaFacebook size={18} className="sm:w-5 sm:h-5" />
+            Continue with Facebook
           </motion.button>
         </form>
 

@@ -35,7 +35,7 @@ export default function Navbar({ onSignOut }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <h1 className="text-xl font-bold text-blue-600 tracking-tight">
-            Lost & Found
+            Wellcome Mosquedians!
           </h1>
         </div>
 
