@@ -70,7 +70,7 @@ export const useItemForm = (user, onItemPosted) => {
     const validationErrors = validateForm(formData);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      return;
+      return { success: false, error: 'Validation failed', validationErrors };
     }
 
     setLoading(true);
@@ -92,7 +92,9 @@ export const useItemForm = (user, onItemPosted) => {
       ]);
 
       if (insertError) {
-        throw new Error("Failed to post item: " + insertError.message);
+        setErrorMsg("Failed to post item: " + insertError.message);
+        setLoading(false);
+        return { success: false, error: insertError };
       }
 
       setSuccessMsg("Item posted successfully!");
@@ -100,11 +102,13 @@ export const useItemForm = (user, onItemPosted) => {
       
       resetForm();
       onItemPosted?.();
+      setLoading(false);
+      return { success: true };
     } catch (error) {
       console.error(error);
       setErrorMsg(error.message);
-    } finally {
       setLoading(false);
+      return { success: false, error };
     }
   };
 

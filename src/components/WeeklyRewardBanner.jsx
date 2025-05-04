@@ -1,11 +1,8 @@
 import { motion } from 'framer-motion';
-import { Gift, Megaphone } from 'lucide-react';
+import { Megaphone, Coins } from 'lucide-react';
 import { useWinners } from '../context/WinnersContext';
 import clsx from 'clsx';
 import { getRewardMessage } from '../utils/rewardMessages.jsx';
-
-// Highlighted name component with subtle animation
-
 
 export default function WeeklyRewardBanner() {
   const { winners, isLoading } = useWinners();
@@ -26,7 +23,7 @@ export default function WeeklyRewardBanner() {
       className={bannerClass}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Megaphone className="w-4 h-4 text-cyan-200 shrink-0" />
+        <Megaphone className="w-6 h-6 text-yellow-200 shrink-0" />
         <p
           className="text-sm font-medium text-center flex-1 mx-4"
           role="region"
@@ -36,7 +33,7 @@ export default function WeeklyRewardBanner() {
           {getRewardMessage(winners)}
         </p>
         <div className="flex items-center space-x-2">
-          <Gift className="w-4 h-4 text-cyan-200 shrink-0" />
+          <Coins className="w-6 h-6 text-yellow-200 shrink-0" />
         </div>
       </div>
     </motion.div>

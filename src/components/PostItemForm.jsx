@@ -36,8 +36,13 @@ export default function PostItemForm({ user, onItemPosted }) {
     e.preventDefault();
     
     try {
-      // First submit the item
-      await submitItem(e);
+      // First submit the item and get the result
+      const postResult = await submitItem(e);
+
+      // Only continue if the post was successful
+      if (!postResult || !postResult.success) {
+        return;
+      }
 
       // Then check if user is one of first two this week
       const { data: winnersData, error: winnersError } = await supabase
