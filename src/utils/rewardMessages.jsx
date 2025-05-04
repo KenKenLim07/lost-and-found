@@ -22,16 +22,18 @@ export function getRewardMessage(winners) {
       <>
         
 
-        📣Shoutout to 🥳<HighlightedName name={topWinners[0].name} />🥳 You've won 🎉₱{REWARD_AMOUNT}! I'll reach out to help you claim your reward.
+        <strong className=""> Shoutout to 🥳 <HighlightedName name={topWinners[0].name} />!</strong> You've won🎁 ₱{REWARD_AMOUNT}! I'll reach out to help you claim your reward.
         <br />
-        <span className="text-cyan-200">One slot left! Post now to Win ₱{REWARD_AMOUNT}!🎁</span>
+        <span className="text-grey-200"> One slot left! Post now to win🎁 ₱{REWARD_AMOUNT}!</span>
       </>
     );
   }
 
   return (
     <>
-      Shoutout to <HighlightedName name={topWinners[0].name} /> and <HighlightedName name={topWinners[1].name} />! Each of you has won ₱{REWARD_AMOUNT}! I'll contact you about claiming your rewards.
+      <strong className=""> Shoutout to 🥳 <HighlightedName name={topWinners[0].name} /> and 🥳 <HighlightedName name={topWinners[1].name} />!</strong> Each of you has won🎁 ₱{REWARD_AMOUNT}! I'll contact you about claiming your rewards.
+      <br />
+      <span className="text-xs text-white/80">🕒 New round starts Monday. Stay sharp!</span>
     </>
   );
-} 
+}
